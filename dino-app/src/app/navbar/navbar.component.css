@@ -1,66 +1,63 @@
-/* General Navbar Styles */
+/* Osnovni stilovi za navbar */
 .navbar {
     position: fixed;
     top: 0;
     width: 100%;
     height: 60px;
-    background: linear-gradient(to right, #a09d97, #5c3538); /* Radial gradient background */
+    background: radial-gradient(circle at top left, #a09d97, #5c3538);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
     z-index: 1000;
-  }
-  
-  .navbar-brand {
+}
+
+.navbar-brand {
     display: flex;
     align-items: center;
-  }
-  
-  .navbar-brand img {
+}
+
+.navbar-brand img {
     height: 40px;
     margin-right: 10px;
-  }
-  
-  .navbar-brand span {
+}
+
+.navbar-brand span {
     color: #fff;
     font-size: 24px;
     font-weight: bold;
-  }
-  
-  .navbar-links {
+}
+
+.navbar-links {
     list-style-type: none;
     display: flex;
     margin: 0;
     padding: 0;
     align-items: center;
-  }
-  
-  .navbar-links li {
+}
+
+.navbar-links li {
     margin-left: 20px;
-  }
-  
-  .navbar-links a {
+}
+
+.navbar-links a{
+    overflow: auto;
     color: #fff;
     text-decoration: none;
+    border-radius: 5px;
     font-size: 18px;
-    padding: 10px 15px;
-    border-radius: 5px;
+    padding: 12px;
     transition: background-color 0.3s ease;
-  }
-  
-  .navbar-links a:hover {
-    background-color: #3e2527; 
+}
+
+.navbar-links a:hover {
+    background-color: #3e2527;
     border-radius: 5px;
-  }
-  
-  .separator {
+}
+
+.separator {
     border-left: 1px solid #fff; 
     height: 30px; 
     margin: 0 20px; 
-  }
-  
-  .navbar-links li:last-child {
-    margin-left: 20px;
   }
   
