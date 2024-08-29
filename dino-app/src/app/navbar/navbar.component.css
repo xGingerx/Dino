@@ -1,4 +1,4 @@
-/* Osnovni stilovi za navbar */
+
 .navbar {
     position: fixed;
     top: 0;
@@ -62,12 +62,12 @@
 }
 
 .navbar-links .active a {
-    background-color: #a5a5a534; /* Use the same color as your hover */
+    background-color: #a5a5a534; 
     border-radius: 2px;
 }
 
 .navbar-links .active a:hover {
-    background-color: #a5a5a57c; /* Use the same color as your hover */
+    background-color: #a5a5a57c; 
     border-radius: 2px;
 }
 

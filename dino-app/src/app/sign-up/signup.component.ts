@@ -10,6 +10,6 @@ import { RouterModule, RouterOutlet } from '@angular/router';
     styleUrl: './signup.component.css'
 })
 
-export class SigninComponent {
+export class SignupComponent {
     title= 'Sign-up';
 };
