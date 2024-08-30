@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, RouterOutlet } from '@angular/router';
+import { NavbarComponent } from './navbar/navbar.component';
 import { FirebaseService } from './firebase.service';
 import { Auth, signInWithPopup, GoogleAuthProvider, User } from 'firebase/auth';
 
