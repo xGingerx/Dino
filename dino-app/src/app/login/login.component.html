@@ -1,9 +1,16 @@
-<div *ngIf="user; else loginTemplate">
-    <p>Welcome, {{ user!.displayName }}!</p>
-    <button (click)="logout()">{{user!.displayName}}</button>
-  </div>
-  
-  <ng-template #loginTemplate>
-    <p>Please log in:</p>
-    <button (click)="login()">Login with Google</button>
-  </ng-template>
+<div class="login">
+    <fieldset class="login-container">
+        <legend>Log in</legend>
+        <div *ngIf="user; else loginTemplate">
+            <p>Welcome, {{ user!.displayName }}!</p>
+            <button (click)="logout()">{{user!.displayName}}</button>
+        </div>
+          
+        <ng-template #loginTemplate>
+            <button id="login" (click)="login()">
+                <img src="google.svg" alt="Google icon" class="google-icon">
+                Login with Google
+            </button>
+        </ng-template>
+    </fieldset>
+</div>
