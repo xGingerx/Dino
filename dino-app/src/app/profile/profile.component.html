@@ -1,3 +1,36 @@
+
 <app-navbar></app-navbar>
 <main></main>
 
+<div *ngIf="user">
+    <p>a</p>
+    <p>a</p>
+    <p>a</p>
+    <p>a</p>
+    <p>a</p>
+    <p>a</p>
+    <h2>User Profile</h2>
+    
+    <form (ngSubmit)="saveChanges()">
+      <div>
+        <label>Email:</label>
+        <input type="text" [value]="email" disabled />
+      </div>
+      
+      <div>
+        <label>Display Name:</label>
+        <input type="text" [(ngModel)]="displayName" name="displayName" />
+      </div>
+      
+      <div>
+        <label>Photo URL:</label>
+        <input type="text" [(ngModel)]="photoURL" name="photoURL" />
+      </div>
+      
+      <div *ngIf="photoURL">
+        <img [src]="photoURL" alt="User Photo" />
+      </div>
+      
+      <button type="submit">Save Changes</button>
+    </form>
+</div>
