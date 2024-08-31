@@ -1,0 +1,9 @@
+<div *ngIf="user; else loginTemplate">
+    <p>Welcome, {{ user!.displayName }}!</p>
+    <button (click)="logout()">{{user!.displayName}}</button>
+  </div>
+  
+  <ng-template #loginTemplate>
+    <p>Please log in:</p>
+    <button (click)="login()">Login with Google</button>
+  </ng-template>
