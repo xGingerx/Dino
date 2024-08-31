@@ -1,26 +1,35 @@
 <nav class="navbar">
     <div class="navbar-brand">
-        <img src="chef.svg" alt="Brand Logo" />
-        <span>StickyJoco</span>
+      <img src="chef.svg" alt="Brand Logo" />
+      <span>StickyJoco</span>
     </div>
-
+  
     <ul class="navbar-links" id="navbar-links">
-        <li [ngClass]="{'active': isActive('/home')}"><a href="/home">
-            <img src="order.svg" alt="Order Icon" />
-            <span>Home</span>
-        </a></li>
-        <li [ngClass]="{'active': isActive('/profile')}"><a href="/profile">
-            <img src="profile.svg" alt="Profile Icon" />
-            <span>Profile</span>
-        </a></li>
-        <li [ngClass]="{'active': isActive('/about')}"><a href="/about">
-            <img src="about.svg" alt="About Us Icon" />
-            <span>About Us</span>
-        </a></li>
-        <li class="separator"></li>
-        <li><a href="#">
-            <img src="logout.svg" alt="Log out Icon" />
-
-        </a></li>
+      <li [ngClass]="{'active': isActive('/home')}"><a href="/home">
+        <img src="order.svg" alt="Order Icon" />
+        <span>Home</span>
+      </a></li>
+  
+      <!-- Conditionally display the Profile link with user display name -->
+      <li *ngIf="isUserLoggedIn()" [ngClass]="{'active': isActive('/profile')}">
+        <a href="/profile">
+          <img src="profile.svg" alt="Profile Icon" />
+          <span>{{ displayName }}</span>
+        </a>
+      </li>
+  
+      <li [ngClass]="{'active': isActive('/about')}"><a href="/about">
+        <img src="about.svg" alt="About Us Icon" />
+        <span>About Us</span>
+      </a></li>
+  
+      <li class="separator"></li>
+  
+      <li>
+        <a (click)="isUserLoggedIn() ? logout() : login()">
+          <img [src]="isUserLoggedIn() ? 'logout.svg' : 'login.svg'" alt="Auth Icon" />
+        </a>
+      </li>
     </ul>
-</nav>
+  </nav>
+  

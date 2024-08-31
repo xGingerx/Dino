@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from 'firebase/auth';
 import { Firestore, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { FirebaseService } from '../login/auth/firebase.service';
+import { FirebaseService } from '../navbar/auth/firebase.service';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';  // Import CommonModule for ngIf
 import { FormsModule } from '@angular/forms';  // Import FormsModule for ngModel
@@ -49,7 +49,7 @@ export class ProfileComponent implements OnInit {
         }
       } else {
         console.log('No user signed in, redirecting to login');
-        this.router.navigate(['/login']);
+        this.router.navigate(['/']);
       }
     });
   }
