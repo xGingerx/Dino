@@ -1,36 +1,46 @@
-
 <app-navbar></app-navbar>
 <main></main>
 
 <div *ngIf="user">
-    <p>a</p>
-    <p>a</p>
-    <p>a</p>
-    <p>a</p>
-    <p>a</p>
-    <p>a</p>
-    <h2>User Profile</h2>
-    
-    <form (ngSubmit)="saveChanges()">
-      <div>
-        <label>Email:</label>
-        <input type="text" [value]="email" disabled />
-      </div>
-      
-      <div>
-        <label>Display Name:</label>
-        <input type="text" [(ngModel)]="displayName" name="displayName" />
-      </div>
-      
-      <div>
-        <label>Photo URL:</label>
-        <input type="text" [(ngModel)]="photoURL" name="photoURL" />
-      </div>
-       h
-      <div *ngIf="photoURL">
-        <img [src]="photoURL" alt="User Photo" />
-      </div>
-      
-      <button type="submit">Save Changes</button>
-    </form>
+  <p>a</p>
+  <p>a</p>
+  <p>a</p>
+  <p>a</p>
+  <p>a</p>
+  <p>a</p>
+  <h2>User Profile</h2>
+
+  <form (ngSubmit)="saveChanges()">
+    <div>
+      <label>Email:</label>
+      <input type="text" [value]="email" disabled />
+    </div>
+
+    <div>
+      <label>Display Name:</label>
+      <input type="text" [(ngModel)]="displayName" name="displayName" />
+    </div>
+
+    <div>
+      <label>Photo URL:</label>
+      <input type="text" [(ngModel)]="photoURL" name="photoURL" />
+    </div>
+
+    <div *ngIf="photoURL">
+      <img [src]="photoURL" alt="User Photo" />
+    </div>
+
+    <button type="submit">Save Changes</button>
+  </form>
+
+  <h3>Your Reservations</h3>
+  <ul *ngIf="reservations.length > 0; else noReservations">
+    <li *ngFor="let reservation of reservations">
+      <p>{{ reservation.date }} - {{ reservation.time }}</p>
+      <button (click)="removeReservation(reservation.date, reservation.time)">Cancel Reservation</button>
+    </li>
+  </ul>
+  <ng-template #noReservations>
+    <p>You have no reservations.</p>
+  </ng-template>
 </div>

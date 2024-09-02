@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from 'firebase/auth';
-import { Firestore, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { Firestore, doc, getDoc, updateDoc, collection, query, where, getDocs, deleteDoc } from 'firebase/firestore';
 import { FirebaseService } from '../navbar/auth/firebase.service';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';  // Import CommonModule for ngIf
 import { FormsModule } from '@angular/forms';  // Import FormsModule for ngModel
 import { NavbarComponent } from '../navbar/navbar.component';
+import { format } from 'date-fns';
 
 @Component({
   selector: 'app-profile',
@@ -20,13 +21,13 @@ export class ProfileComponent implements OnInit {
   displayName: string = '';
   photoURL: string = '';
   email: string = '';
+  reservations: { date: string, time: string }[] = []; // Store user reservations
 
   constructor(private firebaseService: FirebaseService, private router: Router) {}
 
   async ngOnInit() {
     const auth = this.firebaseService.getAuth();
     
-    // Use onAuthStateChanged to get the user when they sign in
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         this.user = user;
@@ -34,7 +35,6 @@ export class ProfileComponent implements OnInit {
         this.displayName = user.displayName || '';
         this.photoURL = user.photoURL || '';
 
-        // Fetch the user's document from Firestore
         const db = this.firebaseService.getFirestore();
         const userDocRef = doc(db, 'users', this.email);
         const userDocSnap = await getDoc(userDocRef);
@@ -47,6 +47,8 @@ export class ProfileComponent implements OnInit {
         } else {
           console.log('User document does not exist.');
         }
+
+        await this.loadUserReservations();
       } else {
         console.log('No user signed in, redirecting to login');
         this.router.navigate(['/']);
@@ -54,10 +56,57 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  async loadUserReservations() {
+    if (this.user) {
+      try {
+        const db = this.firebaseService.getFirestore();
+        const userDocRef = doc(db, 'users', this.email);
+        const userDocSnap = await getDoc(userDocRef);
+        const userReservations = userDocSnap.data()?.['reservations'] || {};
+
+        this.reservations = Object.values(userReservations).map((res: any) => ({
+          date: res.date,
+          time: res.time
+        }));
+
+        console.log('User reservations loaded:', this.reservations);
+      } catch (error) {
+        console.error('Error loading user reservations:', error);
+      }
+    }
+  }
+
+  async removeReservation(date: string, time: string) {
+    if (this.user) {
+      try {
+        const db = this.firebaseService.getFirestore();
+        const userDocRef = doc(db, 'users', this.email);
+        const reservationRef = doc(db, `reservations/${date}/${time}`, this.user.email!);
+
+        // Delete reservation from user's document
+        const userDocSnap = await getDoc(userDocRef);
+        const userReservations = userDocSnap.data()?.['reservations'] || {};
+        delete userReservations[date];
+        await updateDoc(userDocRef, {
+          reservations: userReservations
+        });
+
+        // Delete reservation from the slot
+        await deleteDoc(reservationRef);
+
+        console.log('Reservation removed successfully.');
+
+        // Reload reservations
+        await this.loadUserReservations();
+      } catch (error) {
+        console.error('Error removing reservation:', error);
+      }
+    }
+  }
+
   async saveChanges() {
     if (this.user) {
       try {
-        // Update Firestore document only
         const db = this.firebaseService.getFirestore();
         const userDocRef = doc(db, 'users', this.email);
         await updateDoc(userDocRef, {
