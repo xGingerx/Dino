@@ -5,7 +5,7 @@ class User {
         this.uid = uid;
         this.photoURL = photoURL;
         this.createdAt = new Date();
-        this.reservations = []
+        this.reservations = {}
     }
 }
 
