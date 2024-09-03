@@ -17,9 +17,8 @@ UserController.post('/create', async (req, res)=>{
 })
 
 UserController.post('/update', async (req, res)=>{
-    try {
-        const user = new User(req.body)  
-        const updatedUser = await UserService.updateUser(user);
+    try { 
+        const updatedUser = await UserService.updateUser(req.body);
         res.status(200).json(updatedUser);
     } catch (error) {
         console.error('Error updating user:', error);
@@ -45,7 +44,7 @@ UserController.post('/get', async (req, res) => {
 UserController.post('/delete', async (req, res)=>{
     try {
         await UserService.deleteUserByEmail(req.body.email);
-        res.status(200).json({ message: `User with email ${email} successfully deleted` });
+        res.status(200).json({ message: `User with email ${req.body.email} successfully deleted` });
       } catch (error) {
         console.error('Error deleting user:', error);
         res.status(500).json({ error: error.message });

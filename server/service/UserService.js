@@ -9,7 +9,7 @@ class UserService {
       if (!querySnapshot.empty) {
         let existingUser = {};
         querySnapshot.forEach(doc => {
-          existingUser = { id: doc.id, ...doc.data() };
+          existingUser = { ...doc.data() };
         });
         return existingUser;
       } else {
@@ -19,8 +19,9 @@ class UserService {
           userData.uid,
           userData.photoURL
         );
-
-        const newUserRef = await dbUsers.add({
+        
+        const newUserRef = dbUsers.doc(newUser.email);
+        await newUserRef.set({
           email: newUser.email,
           displayName: newUser.displayName,
           uid: newUser.uid,
@@ -30,7 +31,7 @@ class UserService {
         });
 
         const newUserDoc = await newUserRef.get();
-        return { id: newUserDoc.id, ...newUserDoc.data() };
+        return { ...newUserDoc.data() };
       }
     } catch (error) {
       console.error("Error finding or creating user:", error);
@@ -45,7 +46,7 @@ class UserService {
       if (!querySnapshot.empty) {
         let user = {};
         querySnapshot.forEach(doc => {
-          user = { id: doc.id, ...doc.data() };
+          user = { ...doc.data() };
         });
         return user;
       } else {
@@ -58,6 +59,7 @@ class UserService {
   }
 
   static async updateUser(user){
+        console.log(user)
         try{
             const querySnapshot = await dbUsers.where('email', '==', user.email).get();
             if (querySnapshot.empty) {
@@ -76,6 +78,7 @@ class UserService {
     }
 
     static async deleteUserByEmail(email) {
+        console.log(email)
         try {
           const querySnapshot = await dbUsers.where('email', '==', email).get();
           if (querySnapshot.empty) {
