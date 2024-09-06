@@ -59,7 +59,6 @@ class UserService {
   }
 
   static async updateUser(user){
-        console.log(user)
         try{
             const querySnapshot = await dbUsers.where('email', '==', user.email).get();
             if (querySnapshot.empty) {
@@ -77,6 +76,24 @@ class UserService {
         }
     }
 
+    static async updateUserByEmail(email, reservation){
+      try{
+          const querySnapshot = await dbUsers.where('email', '==', email).get();
+          if (querySnapshot.empty) {
+              throw new Error(`User with email ${email} does not exist`);
+          }
+          const doc = querySnapshot.docs[0];
+          const userDocId = doc.id;
+          const userRef = dbUsers.doc(userDocId);
+          await userRef.update(user) 
+          const updatedUserDoc = await userRef.get();
+          return updatedUserDoc.data()        
+      } catch (error) {
+          console.error("Error updating user:", error);
+          throw error;
+      }
+  }
+
     static async deleteUserByEmail(email) {
         console.log(email)
         try {
@@ -93,7 +110,31 @@ class UserService {
           throw error;
         }
       }
-    
+
+    static async updateReservation(date, time, email){
+      const querySnapshot = await dbUsers.where('email', '==', email).get();
+      if (querySnapshot.empty) {
+        throw new Error(`User with email ${email} does not exist`);
+      }
+      let user = {};
+      querySnapshot.forEach(doc => {
+        user = { ...doc.data() };
+      });
+      user.reservations[date] = time;
+      return user;
+    }
+    static async cancelReservation(date, time, email){
+      const querySnapshot = await dbUsers.where('email', '==', email).get();
+      if (querySnapshot.empty) {
+        throw new Error(`User with email ${email} does not exist`);
+      }
+      let user = {};
+      querySnapshot.forEach(doc => {
+        user = { ...doc.data() };
+      });
+      delete user.reservations[date];
+      return user;
+    }
 }
 
 module.exports = UserService;

@@ -24,8 +24,6 @@ UserController.post('/update', async (req, res)=>{
         console.error('Error updating user:', error);
         res.status(500).json({ error: error.message });
     }
-    
-
 })
 
 UserController.post('/get', async (req, res) => {

@@ -144,7 +144,7 @@ private async removeReservationFromUser(userEmail: string, date: string) {
     if (userSnap.exists()) {
       const userData = userSnap.data();
       const userReservations = userData['reservations'] || {};
-
+      console.log(userReservations)
       // Remove the reservation for the specified date
       if (userReservations[date]) {
         delete userReservations[date];

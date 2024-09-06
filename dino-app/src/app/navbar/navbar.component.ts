@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FirebaseService } from './auth/firebase.service'; // Adjust the path if needed
 import { Auth, signInWithPopup, GoogleAuthProvider, User } from 'firebase/auth';
 import { Firestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import { response } from 'express';
 
 @Component({
   selector: 'app-navbar',
@@ -21,9 +22,8 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {
     const auth = this.firebaseService.getAuth();
     auth.onAuthStateChanged(async user => {
-      this.user = user;
-      if (this.user) {
-        await this.fetchUserData(this.user.email!);
+      if (user) {
+        await this.fetchUserData(user.email!);
       } else {
         this.displayName = '';
       }
@@ -32,13 +32,20 @@ export class NavbarComponent implements OnInit {
 
   async fetchUserData(email: string) {
     try {
-      const db = this.firebaseService.getFirestore();
-      const userRef = doc(db, 'users', email);
-      const docSnap = await getDoc(userRef);
-      if (docSnap.exists()) {
-        const userData = docSnap.data();
-        this.displayName = userData['displayName'] || '';
-      }
+      await fetch('http://localhost:3000/users/get', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      }).then(response=>{
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      }).then(data=>{
+        localStorage.setItem('user', JSON.stringify(data));
+      })
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -46,43 +53,40 @@ export class NavbarComponent implements OnInit {
 
   async login() {
     const provider = new GoogleAuthProvider();
-    try {
-      const result = await signInWithPopup(this.firebaseService.getAuth(), provider);
-      this.user = result.user;
-      this.displayName = this.user.displayName || '';
-
-      console.log('User signed in:', this.user);
-
-      // Create a user document in Firestore if it doesn't already exist
-      const db = this.firebaseService.getFirestore();
-      const userRef = doc(db, 'users', this.user.email!);
-
-      const docSnap = await getDoc(userRef);
-      if (!docSnap.exists()) {
-        // Document doesn't exist, create it
-        await setDoc(userRef, {
-          email: this.user.email,
-          displayName: this.user.displayName,
-          uid: this.user.uid,
-          photoURL: this.user.photoURL,
-          createdAt: new Date()
-        });
-        console.log('User document created in Firestore');
-      } else {
-        console.log('User document already exists in Firestore');
-      }
-    } catch (error) {
-      console.error('Error during sign-in:', error);
+    const result = await signInWithPopup(this.firebaseService.getAuth(), provider);
+    const user = {
+      email: result.user.email,
+      displayName: result.user.displayName || "",
+      uid: result.user.uid,
+      photoURL: result.user.photoURL
     }
+
+    await fetch('http://localhost:3000/users/create',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(user),
+    }).then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('User created successfully:', data);
+      localStorage.setItem('user', JSON.stringify(data));
+    })
+    .catch(error => {
+      console.error('There was an error!', error);
+    });
+    
   }
 
   logout() {
     this.firebaseService.getAuth().signOut()
       .then(() => {
-        console.log('User signed out');
-        this.user = null;
-        this.displayName = '';
-        this.router.navigate(['/']); // Redirect to login or home page
+        localStorage.clear()
       })
       .catch((error) => {
         console.error('Error during sign-out:', error);
@@ -90,7 +94,7 @@ export class NavbarComponent implements OnInit {
   }
 
   isUserLoggedIn(): boolean {
-    return this.user !== null;
+    return localStorage.getItem('user') !== null;
   }
 
   isActive(route: string): boolean {
