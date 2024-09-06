@@ -16,16 +16,16 @@ UserController.post('/create', async (req, res)=>{
     }
 })
 
-UserController.post('/update', async (req, res)=>{
-    try { 
-        const updatedUser = await UserService.updateUser(req.body);
-        res.status(200).json(updatedUser);
-    } catch (error) {
-        console.error('Error updating user:', error);
-        res.status(500).json({ error: error.message });
-    }
-})
-
+UserController.post('/update', async (req, res) => {
+  try {
+      const { email, displayName, photoURL } = req.body;
+      const updatedUser = await UserService.updateUser(email, displayName, photoURL);
+      res.status(200).json(updatedUser);
+  } catch (error) {
+      console.error('Error updating user:', error);
+      res.status(500).json({ error: error.message });
+  }
+});
 UserController.post('/get', async (req, res) => {
     try {
       const email = req.body.email;
@@ -39,17 +39,6 @@ UserController.post('/get', async (req, res) => {
       res.status(500).json({ error: error.message });
     }
 });
-
-UserController.post('/delete', async (req, res)=>{
-    try {
-        await UserService.deleteUserByEmail(req.body.email);
-        res.status(200).json({ message: `User with email ${req.body.email} successfully deleted` });
-      } catch (error) {
-        console.error('Error deleting user:', error);
-        res.status(500).json({ error: error.message });
-      }
-
-})
 
 module.exports = UserController
 

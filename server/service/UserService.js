@@ -58,58 +58,23 @@ class UserService {
     }
   }
 
-  static async updateUser(user){
-        try{
-            const querySnapshot = await dbUsers.where('email', '==', user.email).get();
-            if (querySnapshot.empty) {
-                throw new Error(`User with email ${email} does not exist`);
-            }
-            const doc = querySnapshot.docs[0];
-            const userDocId = doc.id;
-            const userRef = dbUsers.doc(userDocId);
-            await userRef.update(user) 
-            const updatedUserDoc = await userRef.get();
-            return updatedUserDoc.data()        
-        } catch (error) {
-            console.error("Error updating user:", error);
-            throw error;
-        }
+  static async updateUser(email, displayName, photoURL) {
+    try {
+        const userDocRef = dbUsers.doc(email); // Koristi email kao ID dokumenta
+
+        await userDocRef.update({
+            displayName,
+            photoURL
+        });
+
+         // Vraća ažurirane podatke (opcionalno)
+        const updatedUserSnapshot = await userDocRef.get();
+        return updatedUserSnapshot.data();
+    } catch (error) {
+        console.error('Error updating user:', error);
+        throw error;
     }
-
-    static async updateUserByEmail(email, reservation){
-      try{
-          const querySnapshot = await dbUsers.where('email', '==', email).get();
-          if (querySnapshot.empty) {
-              throw new Error(`User with email ${email} does not exist`);
-          }
-          const doc = querySnapshot.docs[0];
-          const userDocId = doc.id;
-          const userRef = dbUsers.doc(userDocId);
-          await userRef.update(user) 
-          const updatedUserDoc = await userRef.get();
-          return updatedUserDoc.data()        
-      } catch (error) {
-          console.error("Error updating user:", error);
-          throw error;
-      }
   }
-
-    static async deleteUserByEmail(email) {
-        console.log(email)
-        try {
-          const querySnapshot = await dbUsers.where('email', '==', email).get();
-          if (querySnapshot.empty) {
-            throw new Error(`User with email ${email} does not exist`);
-          }
-          const doc = querySnapshot.docs[0];
-          const userDocId = doc.id;
-          const userRef = dbUsers.doc(userDocId);
-          await userRef.delete();          
-        } catch (error) {
-          console.error("Error deleting user:", error);
-          throw error;
-        }
-      }
 
     static async updateReservation(date, time, email){
       const querySnapshot = await dbUsers.where('email', '==', email).get();

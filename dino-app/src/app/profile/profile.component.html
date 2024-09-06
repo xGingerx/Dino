@@ -1,7 +1,7 @@
 <app-navbar></app-navbar>
 <main></main>
 
-<div *ngIf="user">
+<div *ngIf="email">
   <p>a</p>
   <p>a</p>
   <p>a</p>
@@ -37,7 +37,7 @@
   <ul *ngIf="reservations.length > 0; else noReservations">
     <li *ngFor="let reservation of reservations">
       <p>{{ reservation.date }} - {{ reservation.time }}</p>
-      <button (click)="removeReservation(reservation.date, reservation.time)">Cancel Reservation</button>
+      <button (click)="cancelReservation(reservation.date, reservation.time)">Cancel Reservation</button>
     </li>
   </ul>
   <ng-template #noReservations>

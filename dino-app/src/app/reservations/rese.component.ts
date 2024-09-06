@@ -25,6 +25,13 @@ export class ReservationsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.initializeUser();
+    //await this.cleanUpReservationsForDate("4-9-2024")
+
+    //await this.generateReservationSlotsForDate("2-9-2024");
+    //await this.generateReservationSlotsForDate("3-9-2024");
+    //await this.generateReservationSlotsForDate("4-9-2024");
+    //await this.generateReservationSlotsForDate("5-9-2024");
+
     await this.updateAvailableSlotsForRange();
   }
 
@@ -160,9 +167,9 @@ private async removeReservationFromUser(userEmail: string, date: string) {
   
   // Flatten the nested arrays
   const slots = (await Promise.all(dates.map(async (date) => {
-    const formattedDate = format(date, 'd\\M\\yyyy');
-    const timeSlots = ['10 to 13', '13 to 16', '16 to 19', '19 to 22'];
-    
+    const formattedDate = format(date, 'd-M-yyyy');
+    const timeSlots = ['10-13', '13-16', '16-19', '19-22'];
+
     return Promise.all(timeSlots.map(async (time) => {
       const slotRef = collection(this.firebaseService.getFirestore(), `reservations/${formattedDate}/${time}`);
       const tempRef = doc(slotRef, 'temp');

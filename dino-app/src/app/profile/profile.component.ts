@@ -30,25 +30,8 @@ export class ProfileComponent implements OnInit {
     
     auth.onAuthStateChanged(async (user) => {
       if (user) {
-        this.user = user;
-        this.email = user.email || '';
-        this.displayName = user.displayName || '';
-        this.photoURL = user.photoURL || '';
-
-        const db = this.firebaseService.getFirestore();
-        const userDocRef = doc(db, 'users', this.email);
-        const userDocSnap = await getDoc(userDocRef);
-
-        if (userDocSnap.exists()) {
-          const userData = userDocSnap.data();
-          this.displayName = userData['displayName'];
-          this.photoURL = userData['photoURL'];
-          console.log('User data loaded:', this.displayName, this.photoURL);
-        } else {
-          console.log('User document does not exist.');
-        }
-
-        await this.loadUserReservations();
+        await this.fetchUserData(user.email!);
+      
       } else {
         console.log('No user signed in, redirecting to login');
         this.router.navigate(['/']);
@@ -56,68 +39,133 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  async loadUserReservations() {
-    if (this.user) {
-      try {
-        const db = this.firebaseService.getFirestore();
-        const userDocRef = doc(db, 'users', this.email);
-        const userDocSnap = await getDoc(userDocRef);
-        const userReservations = userDocSnap.data()?.['reservations'] || {};
-
-        this.reservations = Object.values(userReservations).map((res: any) => ({
-          date: res.date,
-          time: res.time
-        }));
-
-        console.log('User reservations loaded:', this.reservations);
-      } catch (error) {
-        console.error('Error loading user reservations:', error);
+  async fetchUserData(email: string) {
+    try {
+      await fetch('http://localhost:3000/users/get', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      }).then(response=>{
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      }).then(data=>{
+        localStorage.setItem('user', JSON.stringify(data));
+        const storedUser = localStorage.getItem('user');
+        console.log(storedUser);
+      if(storedUser) {
+        const userObj = JSON.parse(storedUser);
+        this.displayName = userObj.displayName;
+        this.email = userObj.email;
+        this.photoURL = userObj.photoURL;
+        for (const key in userObj.reservations) {
+            this.reservations.push({
+              date: userObj.reservations[key].date,
+              time: userObj.reservations[key].time
+            })
+        }
       }
+      })
+    } catch (error) {
+      console.error('Error fetching user data:', error);
     }
   }
 
-  async removeReservation(date: string, time: string) {
-    if (this.user) {
-      try {
-        const db = this.firebaseService.getFirestore();
-        const userDocRef = doc(db, 'users', this.email);
-        const reservationRef = doc(db, `reservations/${date}/${time}`, this.user.email!);
+  async cancelReservation(date: string, time: string) {
+    try {
+        const email = this.email;
+        const requestBody = JSON.stringify({ date, time, email });
+        console.log('Sending request:', requestBody);  // Proveri JSON koji se šalje
 
-        // Delete reservation from user's document
-        const userDocSnap = await getDoc(userDocRef);
-        const userReservations = userDocSnap.data()?.['reservations'] || {};
-        delete userReservations[date];
-        await updateDoc(userDocRef, {
-          reservations: userReservations
+        // Pošalji zahtev za brisanje rezervacije
+        const response = await fetch('http://localhost:3000/reservations/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: requestBody,
         });
 
-        // Delete reservation from the slot
-        await deleteDoc(reservationRef);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
 
-        console.log('Reservation removed successfully.');
+        const data = await response.json();
+        console.log('Server response:', data);  // Proveri odgovor servera
 
-        // Reload reservations
-        await this.loadUserReservations();
-      } catch (error) {
-        console.error('Error removing reservation:', error);
-      }
+        // Ukloni rezervaciju iz localStorage
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            const userObj = JSON.parse(storedUser);
+
+            // Proveri da li rezervacije postoje za dati datum
+            if (userObj.reservations && userObj.reservations[date]) {
+                // Ukloni rezervaciju za određeni vremenski interval
+                delete userObj.reservations[date];  // Ukloni sve rezervacije za taj datum
+                // Ako je potrebno, možeš dodati kod za uklanjanje samo specifične vremenske intervale
+                // delete userObj.reservations[date][time]; // Ako želiš da ukloniš samo specifični vremenski interval
+            }
+
+            // Ažuriraj localStorage
+            localStorage.setItem('user', JSON.stringify(userObj));
+        }
+
+        // Ukloni rezervaciju iz UI-a
+        this.reservations = this.reservations.filter(
+            reservation => reservation.date !== date || reservation.time !== time
+        );
+
+    } catch (error) {
+        console.error('Error cancelling reservation:', error);
     }
-  }
+}
 
-  async saveChanges() {
-    if (this.user) {
-      try {
-        const db = this.firebaseService.getFirestore();
-        const userDocRef = doc(db, 'users', this.email);
-        await updateDoc(userDocRef, {
+
+async saveChanges() {
+  try {
+      const email = this.email; // Pretpostavljam da je email dostupan u ovoj instanci
+      const requestBody = JSON.stringify({
+          email,
           displayName: this.displayName,
-          photoURL: this.photoURL,
-        });
+          photoURL: this.photoURL
+      });
 
-        console.log('Profile updated successfully in Firestore');
-      } catch (error) {
-        console.error('Error updating profile in Firestore:', error);
+      console.log('Sending request:', requestBody);  // Proveri JSON koji se šalje
+
+      const response = await fetch('http://localhost:3000/users/update', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: requestBody,
+      });
+
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
       }
-    }
+
+      const data = await response.json();
+      console.log('Server response:', data);  // Proveri odgovor servera
+
+      // Učitaj korisničke podatke iz localStorage
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+          const userObj = JSON.parse(storedUser);
+
+          // Ažuriraj podatke u lokalnoj memoriji
+          userObj.displayName = this.displayName;
+          userObj.photoURL = this.photoURL;
+
+          localStorage.setItem('user', JSON.stringify(userObj));
+      }
+      window.location.reload()
+  } catch (error) {
+      console.error('Error updating user data:', error);
   }
+}
+
+
 }
