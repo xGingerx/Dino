@@ -45,6 +45,11 @@ export class NavbarComponent implements OnInit {
         return response.json();
       }).then(data=>{
         localStorage.setItem('user', JSON.stringify(data));
+        const storedUser = localStorage.getItem('user');
+      if(storedUser) {
+        const userObj = JSON.parse(storedUser);
+        this.displayName = userObj.displayName;
+      }
       })
     } catch (error) {
       console.error('Error fetching user data:', error);

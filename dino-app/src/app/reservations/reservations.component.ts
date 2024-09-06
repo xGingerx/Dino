@@ -6,14 +6,14 @@ import { Auth, User } from 'firebase/auth';
 import { format, addDays, isToday, isWithinInterval } from 'date-fns';
 
 @Component({
-  selector: 'app-about',
+  selector: 'app-reservations',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './about.component.html',
-  styleUrls: ['./about.component.css']
+  templateUrl: './reservations.component.html',
+  styleUrls: ['./reservations.component.css']
 })
-export class AboutComponent implements OnInit {
-  title = 'About';
+export class ReservationsComponent implements OnInit {
+  title = 'Reservations';
   user: User | null = null;
   displayName = '';
   slots: { date: string, time: string, reservationCount: number, totalSlots: number, available: boolean, reservedByUser: boolean }[] = [];

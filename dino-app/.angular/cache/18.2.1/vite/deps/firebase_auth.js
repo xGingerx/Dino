@@ -1,7 +1,4 @@
 import {
-  __rest
-} from "./chunk-D3QWRFYF.js";
-import {
   Component,
   ErrorFactory,
   FirebaseError,
@@ -29,6 +26,9 @@ import {
   querystringDecode,
   registerVersion
 } from "./chunk-BDC45OZ3.js";
+import {
+  __rest
+} from "./chunk-D3QWRFYF.js";
 import {
   __async,
   __superGet
