@@ -4,9 +4,7 @@ const firebaseConfig = {
     projectId: "restaurant-cded7",
     storageBucket: "restaurant-cded7.appspot.com",
     messagingSenderId: "368353463913",
-    appId: "1:368353463913:web:770e955b42ef01e61c9cf8"
+    appId: "1:368353463913:web:770e955b42ef01e61c9cf8",
 };
 
-module.exports=firebaseConfig;
-
-
+module.exports = firebaseConfig;

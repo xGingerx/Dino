@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from 'firebase/auth';
-import { Firestore, doc, getDoc, updateDoc, collection, query, where, getDocs, deleteDoc } from 'firebase/firestore';
 import { FirebaseService } from '../navbar/auth/firebase.service';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';  // Import CommonModule for ngIf
@@ -22,6 +21,7 @@ export class ProfileComponent implements OnInit {
   photoURL: string = '';
   email: string = '';
   reservations: { date: string, time: string }[] = []; // Store user reservations
+  selectedFile: File | null = null;
 
   constructor(private firebaseService: FirebaseService, private router: Router) {}
 
@@ -37,6 +37,13 @@ export class ProfileComponent implements OnInit {
         this.router.navigate(['/']);
       }
     });
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+    }
   }
 
   async fetchUserData(email: string) {
@@ -123,49 +130,70 @@ export class ProfileComponent implements OnInit {
     }
 }
 
-
 async saveChanges() {
   try {
-      const email = this.email; // Pretpostavljam da je email dostupan u ovoj instanci
-      const requestBody = JSON.stringify({
-          email,
-          displayName: this.displayName,
-          photoURL: this.photoURL
+    const email = this.email;
+    let photoURL = this.photoURL;
+
+    if (this.selectedFile) {
+      // Upload image and get the URL
+      const uploadResponse = await fetch('http://localhost:3000/users/uploadImage', {
+        method: 'POST',
+        body: this.createFormData(this.selectedFile, email), // Prosledi email
       });
 
-      console.log('Sending request:', requestBody);  // Proveri JSON koji se šalje
-
-      const response = await fetch('http://localhost:3000/users/update', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: requestBody,
-      });
-
-      if (!response.ok) {
-          throw new Error('Network response was not ok');
+      if (!uploadResponse.ok) {
+        throw new Error('Image upload failed');
       }
 
-      const data = await response.json();
-      console.log('Server response:', data);  // Proveri odgovor servera
+      const uploadData = await uploadResponse.json();
+      photoURL = uploadData.photoURL;
+    }
 
-      // Učitaj korisničke podatke iz localStorage
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-          const userObj = JSON.parse(storedUser);
+    const requestBody = JSON.stringify({
+      email,
+      displayName: this.displayName,
+      photoURL
+    });
 
-          // Ažuriraj podatke u lokalnoj memoriji
-          userObj.displayName = this.displayName;
-          userObj.photoURL = this.photoURL;
+    console.log('Sending request:', requestBody);
 
-          localStorage.setItem('user', JSON.stringify(userObj));
-      }
-      window.location.reload()
+    const response = await fetch('http://localhost:3000/users/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: requestBody,
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    console.log('Server response:', data);
+
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const userObj = JSON.parse(storedUser);
+      userObj.displayName = this.displayName;
+      userObj.photoURL = photoURL;
+      localStorage.setItem('user', JSON.stringify(userObj));
+    }
+    window.location.reload();
   } catch (error) {
-      console.error('Error updating user data:', error);
+    console.error('Error updating user data:', error);
   }
 }
 
+createFormData(file: File, email: string) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('email', email); // Dodaj email u FormData
+  return formData;
+}
 
 }
+
+
+

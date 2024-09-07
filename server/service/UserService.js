@@ -1,10 +1,11 @@
 const User = require('../entity/user');
-const { dbUsers } = require('../firebase/firebase');
+const { query, where, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, dbReservations, dbUsers } = require('../firebase/firebase');
 
 class UserService {
   static async findOrCreateUser(userData) {
     try {
-      const querySnapshot = await dbUsers.where('email', '==', userData.email).get();
+      const q = query(dbUsers, where('email', '==', userData.email));
+      const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
         let existingUser = {};
@@ -19,9 +20,9 @@ class UserService {
           userData.uid,
           userData.photoURL
         );
-        
-        const newUserRef = dbUsers.doc(newUser.email);
-        await newUserRef.set({
+
+        const newUserRef = doc(dbUsers, newUser.email);
+        await setDoc(newUserRef, {
           email: newUser.email,
           displayName: newUser.displayName,
           uid: newUser.uid,
@@ -30,7 +31,7 @@ class UserService {
           reservations: newUser.reservations
         });
 
-        const newUserDoc = await newUserRef.get();
+        const newUserDoc = await getDoc(newUserRef);
         return { ...newUserDoc.data() };
       }
     } catch (error) {
@@ -39,67 +40,110 @@ class UserService {
     }
   }
 
+  // Fetch user by email
   static async getUserByEmail(email) {
     try {
-      const querySnapshot = await dbUsers.where('email', '==', email).get();
+      const q = query(dbUsers, where("email", "==", email)); // Create query for email
+      const querySnapshot = await getDocs(q);
 
-      if (!querySnapshot.empty) {
-        let user = {};
-        querySnapshot.forEach(doc => {
-          user = { ...doc.data() };
-        });
-        return user;
-      } else {
-        throw new Error('User not found');
+      if (querySnapshot.empty) {
+        console.log(`No user found with email ${email}.`);
+        return null;
       }
+
+      let userData = null;
+      querySnapshot.forEach(doc => {
+        userData = { id: doc.id, ...doc.data() };
+      });
+
+      return userData;
     } catch (error) {
-      console.error("Error fetching user by email:", error);
-      throw error;
+      console.error('Error fetching user by email:', error);
+      throw new Error('Failed to fetch user by email');
     }
   }
 
   static async updateUser(email, displayName, photoURL) {
     try {
-        const userDocRef = dbUsers.doc(email); // Koristi email kao ID dokumenta
+      const userDocRef = doc(dbUsers, email); // Use doc() to get a reference by email
 
-        await userDocRef.update({
-            displayName,
-            photoURL
-        });
+      // Prepare update data
+      const updateData = {
+        displayName
+      };
 
-         // Vraća ažurirane podatke (opcionalno)
-        const updatedUserSnapshot = await userDocRef.get();
-        return updatedUserSnapshot.data();
+      // If photoURL is provided, add it to the update data
+      if (photoURL) {
+        updateData.photoURL = photoURL;
+      }
+
+      // Update the user data in the database
+      await updateDoc(userDocRef, updateData);
+
+      // Return updated data
+      const updatedUserSnapshot = await getDoc(userDocRef);
+      return updatedUserSnapshot.data();
     } catch (error) {
-        console.error('Error updating user:', error);
-        throw error;
+      console.error('Error updating user:', error);
+      throw error;
     }
   }
 
-    static async updateReservation(date, time, email){
-      const querySnapshot = await dbUsers.where('email', '==', email).get();
+  static async updateReservation(date, time, email) {
+    try {
+      const q = query(dbUsers, where('email', '==', email));
+      const querySnapshot = await getDocs(q);
+      
       if (querySnapshot.empty) {
         throw new Error(`User with email ${email} does not exist`);
       }
+
       let user = {};
       querySnapshot.forEach(doc => {
         user = { ...doc.data() };
       });
+
+      user.reservations = user.reservations || {};
       user.reservations[date] = time;
+
+      // Update the user data in the database
+      const userDocRef = doc(dbUsers, email);
+      await updateDoc(userDocRef, { reservations: user.reservations });
+
       return user;
+    } catch (error) {
+      console.error('Error updating reservation:', error);
+      throw error;
     }
-    static async cancelReservation(date, time, email){
-      const querySnapshot = await dbUsers.where('email', '==', email).get();
+  }
+
+  static async cancelReservation(date, time, email) {
+    try {
+      const q = query(dbUsers, where('email', '==', email));
+      const querySnapshot = await getDocs(q);
+      
       if (querySnapshot.empty) {
         throw new Error(`User with email ${email} does not exist`);
       }
+
       let user = {};
       querySnapshot.forEach(doc => {
         user = { ...doc.data() };
       });
+
+      user.reservations = user.reservations || {};
       delete user.reservations[date];
+
+      // Update the user data in the database
+      const userDocRef = doc(dbUsers, email);
+      await updateDoc(userDocRef, { reservations: user.reservations });
+
       return user;
+    } catch (error) {
+      console.error('Error canceling reservation:', error);
+      throw error;
     }
+  }
 }
 
 module.exports = UserService;

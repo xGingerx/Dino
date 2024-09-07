@@ -22,6 +22,11 @@
     </div>
 
     <div>
+      <label>Photo:</label>
+      <input type="file" (change)="onFileSelected($event)" />
+    </div>
+    
+    <div>
       <label>Photo URL:</label>
       <input type="text" [(ngModel)]="photoURL" name="photoURL" />
     </div>
