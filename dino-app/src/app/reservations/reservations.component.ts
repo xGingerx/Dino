@@ -23,139 +23,45 @@ export class ReservationsComponent implements OnInit {
 
   constructor(private firebaseService: FirebaseService) {}
 
-  async ngOnInit(): Promise<void> {
-    this.initializeUser();
-
-    await this.updateAvailableSlotsForRange();
-  }
-
-  private initializeUser() {
+  ngOnInit(): void {
     const auth = this.firebaseService.getAuth();
     auth.onAuthStateChanged(async user => {
       this.user = user;
-      if (this.user) {
-        await this.fetchUserData(this.user.email!);
-        await this.updateAvailableSlotsForRange(); // Ensure slots are updated after user login
+      if (user) {
+        await this.fetchUserData(user.email!);
+        await this.updateAvailableSlotsForRange();
       } else {
         this.displayName = '';
       }
     });
   }
 
-  private async fetchUserData(email: string) {
+  async fetchUserData(email: string) {
     try {
-      const db = this.firebaseService.getFirestore();
-      const userRef = doc(db, 'users', email);
-      const docSnap = await getDoc(userRef);
-      if (docSnap.exists()) {
-        const userData = docSnap.data();
-        this.displayName = userData?.['displayName'] || '';
+      await fetch('http://localhost:3000/users/get', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      }).then(response=>{
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      }).then(data=>{
+        localStorage.setItem('user', JSON.stringify(data));
+        const storedUser = localStorage.getItem('user');
+      if(storedUser) {
+        const userObj = JSON.parse(storedUser);
+        this.displayName = userObj.displayName;
       }
+      })
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
   }
-
-  async generateReservationSlotsForDate(date: string) {
-    const db = this.firebaseService.getFirestore();
-    const dayDocRef = doc(db, 'reservations', date);
-    const dayDocSnap = await getDoc(dayDocRef);
-
-    if (!dayDocSnap.exists()) {
-      console.log(`Creating document for date: ${date}`);
-      await setDoc(dayDocRef, {});
-
-      const timeSlots = ['10 to 13', '13 to 16', '16 to 19', '19 to 22'];
-      for (const slot of timeSlots) {
-        const slotCollectionRef = collection(db, `reservations/${date}/${slot}`);
-        console.log(`Creating slot: ${slot} for date: ${date}`);
-        await setDoc(doc(slotCollectionRef, 'temp'), {});
-      }
-    } else {
-      console.log(`Document already exists for date: ${date}`);
-    }
-  }
   
-
-async cleanUpReservationsForDate(date: string) {
-  const db = this.firebaseService.getFirestore();
-
-  try {
-    // Reference to the reservations document for the specified date
-    const dayDocRef = doc(db, 'reservations', date);
-    const dayDocSnap = await getDoc(dayDocRef);
-
-    if (dayDocSnap.exists()) {
-      console.log(`Cleaning up reservations for date: ${date}`);
-
-      // Fetch all time slots for the specified date
-      const timeSlots = ['10 to 13', '13 to 16', '16 to 19', '19 to 22'];
-      
-      for (const slot of timeSlots) {
-        const slotCollectionRef = collection(db, `reservations/${date}/${slot}`);
-        
-        // Fetch all reservations in the current slot
-        const reservationsSnap = await getDocs(slotCollectionRef);
-        
-        // Remove reservations from each user
-        for (const reservationDoc of reservationsSnap.docs) {
-          const reservationData = reservationDoc.data();
-          const reservedBy = reservationData['reservedBy'];
-          
-          if (reservedBy) {
-            await this.removeReservationFromUser(reservedBy, date);
-          }
-
-          // Delete the reservation document
-          await deleteDoc(reservationDoc.ref);
-        }
-
-        // Optionally delete the temporary document if it exists
-        const tempDocRef = doc(slotCollectionRef, 'temp');
-        await deleteDoc(tempDocRef);
-      }
-
-      // Finally, delete the day's document
-      await deleteDoc(dayDocRef);
-
-      console.log(`Successfully cleaned up reservations and deleted slots for date: ${date}`);
-
-    } else {
-      console.log(`No document found for date: ${date}`);
-    }
-  } catch (error) {
-    console.error('Error cleaning up reservations and deleting day:', error);
-  }
-}
-
-private async removeReservationFromUser(userEmail: string, date: string) {
-  const db = this.firebaseService.getFirestore();
-
-  try {
-    const userDocRef = doc(db, 'users', userEmail);
-    const userSnap = await getDoc(userDocRef);
-
-    if (userSnap.exists()) {
-      const userData = userSnap.data();
-      const userReservations = userData['reservations'] || {};
-      console.log(userReservations)
-      // Remove the reservation for the specified date
-      if (userReservations[date]) {
-        delete userReservations[date];
-        await updateDoc(userDocRef, {
-          reservations: userReservations
-        });
-
-        console.log(`Removed reservation for date ${date} from user ${userEmail}`);
-      }
-    } else {
-      console.log(`No user document found for ${userEmail}`);
-    }
-  } catch (error) {
-    console.error('Error removing reservation from user:', error);
-  }
-}
-
   private async updateAvailableSlotsForRange() {
   const dates = this.getDatesInRange(this.startDate, this.endDate);
   
