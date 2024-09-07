@@ -99,7 +99,10 @@ export class NavbarComponent implements OnInit {
   }
 
   isUserLoggedIn(): boolean {
-    return localStorage.getItem('user') !== null;
+    if (typeof window !== 'undefined' && localStorage !== undefined) {
+      return localStorage.getItem('user') !== null;
+    }
+    return false;
   }
 
   isActive(route: string): boolean {
