@@ -25,6 +25,7 @@ export class ReservationsComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.initializeUser();
+
     await this.updateAvailableSlotsForRange();
   }
 
@@ -64,7 +65,7 @@ export class ReservationsComponent implements OnInit {
       console.log(`Creating document for date: ${date}`);
       await setDoc(dayDocRef, {});
 
-      const timeSlots = ['10-13', '13-16', '16-19', '19-22'];
+      const timeSlots = ['10 to 13', '13 to 16', '16 to 19', '19 to 22'];
       for (const slot of timeSlots) {
         const slotCollectionRef = collection(db, `reservations/${date}/${slot}`);
         console.log(`Creating slot: ${slot} for date: ${date}`);
@@ -88,7 +89,7 @@ async cleanUpReservationsForDate(date: string) {
       console.log(`Cleaning up reservations for date: ${date}`);
 
       // Fetch all time slots for the specified date
-      const timeSlots = ['10-13', '13-16', '16-19', '19-22'];
+      const timeSlots = ['10 to 13', '13 to 16', '16 to 19', '19 to 22'];
       
       for (const slot of timeSlots) {
         const slotCollectionRef = collection(db, `reservations/${date}/${slot}`);
@@ -162,7 +163,7 @@ private async removeReservationFromUser(userEmail: string, date: string) {
   const slots = (await Promise.all(dates.map(async (date) => {
     const formattedDate = format(date, 'd\\M\\yyyy');
     const timeSlots = ['10 to 13', '13 to 16', '16 to 19', '19 to 22'];
-    
+
     return Promise.all(timeSlots.map(async (time) => {
       const slotRef = collection(this.firebaseService.getFirestore(), `reservations/${formattedDate}/${time}`);
       const tempRef = doc(slotRef, 'temp');
