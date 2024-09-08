@@ -21,15 +21,13 @@
       </a>
     </li>
 
-    
-
-    <li [ngClass]="{'active': isActive('/reservations')}">
-      <a routerLink="/reservations">
-        <img src="reservation.svg" alt="Order Icon" />
-        <span>Reservations</span>
-      </a>
-    </li>
-    <li class="separator"></li>
+    <li *ngIf="isUserLoggedIn()" [ngClass]="{'active': isActive('/reservations')}">
+        <a routerLink="/reservations">
+          <img src="reservation.svg" alt="Order Icon" />
+          <span>Reservations</span>
+        </a>
+      </li>
+      <li class="separator"></li>
 
     <li>
       <a (click)="isUserLoggedIn() ? logout() : login()">
