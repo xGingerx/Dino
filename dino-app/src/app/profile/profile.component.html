@@ -1,7 +1,7 @@
 <main></main>
 
 <div *ngIf="email">
-  <h2>User Profile</h2>
+  <h1>User Profile</h1>
 
   <form (ngSubmit)="saveChanges()">
     <div class="column">
@@ -33,7 +33,7 @@
     </div>
   </form>
 
-  <h2>Your Reservations</h2>
+  <h1>Your Reservations</h1>
   <ul class = "list-item" *ngIf="reservations.length > 0; else noReservations">
     <li *ngFor="let reservation of reservations">
       <p class = "reservation">{{ reservation.date }} - {{ reservation.time }}</p>
@@ -43,6 +43,6 @@
     </li>
   </ul>
   <ng-template #noReservations>
-    <p >You have no reservations.</p>
+    <h2>You have no reservations.</h2>
   </ng-template>
 </div>

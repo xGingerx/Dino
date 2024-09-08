@@ -4,17 +4,27 @@ main {
   margin-top: 5rem; /* Vrhunski margina */
 }
 
-
-h2 {
-  color: #000000; /* Promenjena boja u belo za bolji kontrast */
+h1 {
   margin-top: 1.25rem; /* Donji margina */
   margin-bottom: 1.25rem; /* Donji margina */
   text-align: center; /* Centriranje h2 naslova */
+  color: #000000; /* Boja za naslov */
+  font-size: 2.4rem; /* Veća veličina fonta za naslov */
+  font-weight: bold;
+}
+
+h2 {
+  margin-top: 1.25rem; /* Donji margina */
+  margin-bottom: 1.25rem; /* Donji margina */
+  text-align: center; /* Centriranje h2 naslova */
+  color: #000000; /* Boja za naslov */
+  font-size: 1.8rem; /* Veća veličina fonta za naslov */
+  font-weight: bold;
 }
 
 .reservation{
   font-weight: bold;
-  font-size: larger;
+  font-size: 1.4rem;
 }
 
 form {
@@ -30,6 +40,7 @@ label {
   color: #000000; /* Svetlija boja za bolju vidljivost */
   font-weight: bold;
   margin-bottom: 0.5rem;
+  font-size: 1.2rem;
 }
 
 .column{
@@ -55,9 +66,11 @@ label {
   padding: 0.625rem;
   border-radius: 0.25rem;
   width: 50%;
+  font-size: 1rem;
 }
 
 .writable{
+  font-size: 1rem;
   width: 50%;
   margin-left: 1%;
   margin-bottom: 1%;
@@ -117,6 +130,7 @@ button {
   padding: 0.625rem 1.25rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-size: 1.1rem;
 }
 
 button:hover {
@@ -137,4 +151,5 @@ button:hover {
     padding: 0.625rem; /* Unutrašnji razmak */
     margin: 0.625rem auto; /* Centriranje stavki liste na manjim ekranima */
   }
+  
 }

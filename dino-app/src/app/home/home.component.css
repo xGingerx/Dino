@@ -12,7 +12,13 @@ main {
   
 }
 
+.img{
+  max-width: 40%; /* Maksimalna širina slike */
+}
+
 .row{
+  padding-left: 3%;
+  padding-right: 3%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -21,6 +27,20 @@ main {
   max-width: 80%;
   margin: 0 auto; /* Centriranje paragrafa */
   background-color: #F2BB76; /* Tamnija pozadina */
+  border-radius: 0.25rem;
+}
+
+.row2{
+  padding-left: 3%;
+  padding-right: 3%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 10px;
+  max-width: 80%;
+  margin: 0 auto; /* Centriranje paragrafa */
+  border-radius: 0.25rem;
 }
 
 
@@ -30,8 +50,10 @@ main {
 }
 
 .intro h1 {
-  color: #ffffff; /* Boja za naslov */
-  font-size: 2.5rem; /* Veća veličina fonta za naslov */
+  padding-top: 1%;
+  color: #000000; /* Boja za naslov */
+  font-size: 3rem; /* Veća veličina fonta za naslov */
+  font-weight: bold;
 }
 
 .intro .restaurant-image {
@@ -43,45 +65,74 @@ main {
 }
 
 .intro p {
-  color: #e0e0e0; /* Boja za tekst */
-  font-size: 1rem;
+  color: #000000; /* Boja za tekst */
+  font-size: 1.3rem;
   line-height: 1.5; /* Prostor između linija */
   margin: 0 auto; /* Centriranje teksta */
   max-width: 80%; /* Maksimalna širina teksta */
 }
 
 .location, .contact, .delivery {
-  margin-bottom: 2rem; /* Donji razmak između sekcija */
+  padding: 1%;
+  margin: 1%;
+  background-color: #F2BB76; /* Tamnija pozadina */
+  width: 33%;
+  height: 100%;
+  font-size: 1rem;
+  line-height: 1.5; /* Prostor između linija */
+  color: #000000; /* Boja za tekst */
+  border-radius: 0.25rem;
+  text-align: center;
+
 }
 
 h2 {
-  color: #ffffff; /* Boja za naslove sekcija */
+  color: #000000; /* Boja za naslove sekcija */
   margin-bottom: 1rem; /* Donji margina */
   font-size: 1.5rem; /* Veličina fonta za naslove sekcija */
 }
 
-address {
-  font-style: normal; /* Normalan stil za adresu */
-  color: #e0e0e0; /* Boja za adresu */
-}
-
 a {
-  color: #ffffff; /* Boja za linkove */
+  color: #000000; /* Boja za linkove */
   text-decoration: none; /* Uklanjanje podcrtavanja linkova */
+  font-weight: bold;
 }
 
 a:hover {
   text-decoration: underline; /* Dodavanje podcrtavanja prilikom hover-a */
 }
 
-.contact p, .delivery p {
-  font-size: 1rem;
-  line-height: 1.5; /* Prostor između linija */
-  color: #e0e0e0; /* Boja za tekst */
+.download-container {
+  text-align: center; /* Centriranje dugmeta */
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+}
+
+.download-button {
+  background-color: #ffffff; /* Pozadina dugmeta */
+  color: #000000; /* Boja teksta */
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.625rem 1.25rem;
+  text-decoration: none; /* Uklanjanje podcrtavanja linka */
+  display: inline-block; /* Inline blok za dugme */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.download-button:hover {
+  background-color: #ffffff; /* Tamnija pozadina */
 }
 
 @media (max-width: 600px) {
-  .intro p, .contact p, .delivery p {
-    font-size: 0.875rem; /* Manja veličina fonta na manjim ekranima */
+  .location, .contact, .delivery {
+    font-size: 0.75rem; /* Manja veličina fonta na manjim ekranima */
+  }
+  .row {
+    padding-top: 4%;
+    flex-direction: column;
+  }
+  h2 {
+    font-size: 160%;
   }
 }

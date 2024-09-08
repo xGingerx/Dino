@@ -84,7 +84,7 @@
 }
 
 
-@media (max-width: 840px) {
+@media (max-width: 600px) {
     .navbar-links li span{
         display: none; 
     }
