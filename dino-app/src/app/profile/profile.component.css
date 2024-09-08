@@ -131,10 +131,9 @@ button:hover {
   width: 1.25rem; /* Veličina spinnera */
   height: 1.25rem;
   animation: spin 1s linear infinite;
-  margin: 0 auto; /* Centriranje spinnera */
 }
 
-@media (max-width: 37.5rem) { /* 600px prevedeno u rem, pod pretpostavkom da je osnovna veličina fonta 16px */
+@media (max-width: 600px) { /* 600px prevedeno u rem, pod pretpostavkom da je osnovna veličina fonta 16px */
   .list-item {
     padding: 0.625rem; /* Unutrašnji razmak */
     margin: 0.625rem auto; /* Centriranje stavki liste na manjim ekranima */
