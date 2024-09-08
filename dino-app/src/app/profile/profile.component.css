@@ -6,7 +6,7 @@ main {
 
 
 h2 {
-  color: #ffffff; /* Promenjena boja u belo za bolji kontrast */
+  color: #000000; /* Promenjena boja u belo za bolji kontrast */
   margin-top: 1.25rem; /* Donji margina */
   margin-bottom: 1.25rem; /* Donji margina */
   text-align: center; /* Centriranje h2 naslova */
@@ -18,7 +18,7 @@ h2 {
 }
 
 form {
-  background-color: #333333; /* Tamna pozadina forme */
+  background-color: #F2BB76; /* Tamna pozadina forme */
   border-radius: 0.5rem; /* Zaobljeni uglovi */
   padding: 1.25rem; /* Unutrašnji razmak */
   box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.1); /* Sjena */
@@ -27,7 +27,7 @@ form {
 }
 
 label {
-  color: #e0e0e0; /* Svetlija boja za bolju vidljivost */
+  color: #000000; /* Svetlija boja za bolju vidljivost */
   font-weight: bold;
   margin-bottom: 0.5rem;
 }
@@ -50,7 +50,6 @@ label {
 .not-writable {
   margin-left: 1%;
   margin-bottom: 1%;
-  background-color: #9a9a9a9a; /* Tamnija pozadina */
   color: #030303; /* Svetlija boja teksta */
   border: none;
   padding: 0.625rem;
@@ -62,7 +61,7 @@ label {
   width: 50%;
   margin-left: 1%;
   margin-bottom: 1%;
-  background-color: #ffffff; /* Tamnija pozadina */
+  background-color: rgb(255, 219, 172); /* Tamnija pozadina */
   color: #000000; /* Svetlija boja teksta */
   border: none;
   padding: 0.625rem;
@@ -70,7 +69,7 @@ label {
 }
 
 p {
-  color: #f0f0f0; /* Svetlija boja za bolju vidljivost */
+  color: #000000; /* Svetlija boja za bolju vidljivost */
   font-size: 1rem; /* Veličina fonta */
   margin: 0 auto; /* Centriranje paragrafa */
   padding-bottom: 1.25rem; /* Donji unutrašnji razmak */
@@ -92,7 +91,7 @@ ul {
 }
 
 li {
-  background-color: #3c3c3c;
+  background-color: #F2BB76;
   border-radius: 0.5rem; /* Zaobljeni uglovi */
   padding: 1rem; /* Unutrašnji razmak */
   margin-bottom: 0.625rem; /* Donji margina */
@@ -101,7 +100,7 @@ li {
 }
 
 li p {
-  color: #e1e1e1; /* Svetlija boja za bolju vidljivost */
+  color: #000000; /* Svetlija boja za bolju vidljivost */
 }
 
 .button-container {
@@ -121,7 +120,7 @@ button {
 }
 
 button:hover {
-  background-color: #4a4acc; /* Tamnija plava prilikom hover-a */
+  background-color: rgb(255, 220, 180); /* Tamnija plava prilikom hover-a */
 }
 
 .spinner {

@@ -4,13 +4,13 @@
     top: 0;
     width: 100%;
     height: 60px;
-    background: radial-gradient(circle at top left, #363636, #231b1b);
+    background: #F2BB76;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 20px;
     z-index: 1000;
-    border-bottom: 1px solid rgb(97, 97, 97);
+    border-bottom: 1px solid #ec973b;
 }
 
 .navbar-brand {
@@ -24,7 +24,7 @@
 }
 
 .navbar-brand span {
-    color: #fff;
+    color: #000000;
     font-size: 24px;
     font-weight: bold;
 }
@@ -52,7 +52,7 @@
 
 .navbar-links a {
     display: flex;
-    color: #fff;
+    color: #000000;
     text-decoration: none;
     border-radius: 5px;
     font-size: 18px;
@@ -62,23 +62,23 @@
 }
 
 .navbar-links .active a {
-    background-color: #a5a5a534; 
+    background-color: #eea556; 
     border-radius: 2px;
 }
 
 .navbar-links .active a:hover {
-    background-color: #a5a5a57c; 
+    background-color: #ec973b; 
     border-radius: 2px;
 }
 
 
 .navbar-links a:hover {
-    background-color: #a5a5a57c;
+    background-color: #ec973b;
     border-radius: 2px;
 }
 
 .separator {
-    border-left: 1px solid rgb(97, 97, 97);
+    border-left: 1px solid #ec973b;
     height: 30px;
     margin: 0 20px;
 }

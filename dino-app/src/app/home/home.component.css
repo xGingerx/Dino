@@ -1,9 +1,87 @@
 main {
-    max-width: 800px;
-    margin: 0 auto;
-    margin-top: 80px; 
-  }
+  max-width: 50rem; /* Ograničava širinu glavnog sadržaja na 50rem */
+  margin: 0 auto; /* Centriranje glavnog sadržaja */
+  margin-top: 5rem; /* Vrhunski margina */
+}
 
-  h3{
-    color:white
+.column{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  
+}
+
+.row{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 10px;
+  max-width: 80%;
+  margin: 0 auto; /* Centriranje paragrafa */
+  background-color: #F2BB76; /* Tamnija pozadina */
+}
+
+
+.intro {
+  text-align: center; /* Centriranje teksta */
+  margin-bottom: 2rem; /* Donji razmak između sekcija */
+}
+
+.intro h1 {
+  color: #ffffff; /* Boja za naslov */
+  font-size: 2.5rem; /* Veća veličina fonta za naslov */
+}
+
+.intro .restaurant-image {
+  display: block;
+  margin: 1.25rem auto;
+  max-width: 80%; /* Maksimalna širina slike */
+  border-radius: 0.5rem; /* Zaobljeni uglovi slike */
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.1); /* Sjena */
+}
+
+.intro p {
+  color: #e0e0e0; /* Boja za tekst */
+  font-size: 1rem;
+  line-height: 1.5; /* Prostor između linija */
+  margin: 0 auto; /* Centriranje teksta */
+  max-width: 80%; /* Maksimalna širina teksta */
+}
+
+.location, .contact, .delivery {
+  margin-bottom: 2rem; /* Donji razmak između sekcija */
+}
+
+h2 {
+  color: #ffffff; /* Boja za naslove sekcija */
+  margin-bottom: 1rem; /* Donji margina */
+  font-size: 1.5rem; /* Veličina fonta za naslove sekcija */
+}
+
+address {
+  font-style: normal; /* Normalan stil za adresu */
+  color: #e0e0e0; /* Boja za adresu */
+}
+
+a {
+  color: #ffffff; /* Boja za linkove */
+  text-decoration: none; /* Uklanjanje podcrtavanja linkova */
+}
+
+a:hover {
+  text-decoration: underline; /* Dodavanje podcrtavanja prilikom hover-a */
+}
+
+.contact p, .delivery p {
+  font-size: 1rem;
+  line-height: 1.5; /* Prostor između linija */
+  color: #e0e0e0; /* Boja za tekst */
+}
+
+@media (max-width: 600px) {
+  .intro p, .contact p, .delivery p {
+    font-size: 0.875rem; /* Manja veličina fonta na manjim ekranima */
   }
+}
