@@ -19,7 +19,7 @@ ReservationController.post('/get', (req, res)=>{
 
 ReservationController.post('/getActive', async (req, res)=>{
     try { 
-        const reservation = await ReservationService.addUserReservation(req.body.date, req.body.time, req.body.email);
+        const reservation = await ReservationService.getAllReservations();
         res.status(200).json(reservation);
     } catch (error) {
         console.error('Error adding reservation for user:', error);
