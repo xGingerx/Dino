@@ -187,7 +187,56 @@ class ReservationService {
     }
 
     static async cancelReservation(date, time, email) {
-        
+        try {
+          console.log(`Trying to find reservation for date: ${date}`);
+      
+          // Reference to the document for the specific date in the reservations collection
+          const docRef = doc(dbReservations, date);
+          const docSnapshot = await getDoc(docRef);
+      
+          if (!docSnapshot.exists()) {
+            console.log(`No reservations found for ${date}.`);
+            return null;
+          }
+      
+          console.log(`Document data for ${date}:`, docSnapshot.data());
+      
+          // Reference to the time slot collection
+          const timeCollectionRef = collection(docRef, time); // Collection for the time slot
+          const emailDocRef = doc(timeCollectionRef, email); // Document for the user in that time slot
+      
+          // Check if the reservation exists
+          const emailDocSnapshot = await getDoc(emailDocRef);
+          if (!emailDocSnapshot.exists()) {
+            console.log(`No reservation found for email ${email} in time slot ${time}.`);
+            return null;
+          }
+      
+          // Add a temporary document to prevent the collection from being deleted
+          const tempDocRef = doc(timeCollectionRef, "temp");
+          await setDoc(tempDocRef, { temp: true });
+          console.log(`Temporary document created in time slot ${time} to prevent collection deletion.`);
+      
+          // Delete the reservation document from the time slot collection
+          await deleteDoc(emailDocRef);
+          console.log(`Deleted reservation for email ${email} in time slot ${time}.`);
+      
+          // Update the user document to remove the reservation entry
+          const userDocRef = doc(dbUsers, email);
+          await updateDoc(userDocRef, {
+            [`reservations.${date}`]: deleteField() // Use deleteField() to remove the specific date
+          });
+          console.log(`Updated user document for email ${email}, removed reservation for ${date}.`);
+      
+          return {
+            message: `Reservation for ${date} and time slot ${time} successfully canceled.`
+          };
+      
+        } catch (error) {
+          console.error('Error canceling reservation:', error);
+          return null;
+        }
+      }
     }
-}
+
 module.exports = ReservationService;

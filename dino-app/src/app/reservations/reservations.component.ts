@@ -16,6 +16,7 @@ export class ReservationsComponent implements OnInit {
   title = 'Reservations';
   user: User | null = null;
   displayName = '';
+  email = '';
   slots: { date: string, time: string, reservationCount: number, totalSlots: number, available: boolean, reservedByUser: boolean }[] = [];
   startDate: Date = new Date();
   endDate: Date = addDays(new Date(), 7);
@@ -55,6 +56,7 @@ export class ReservationsComponent implements OnInit {
       if(storedUser) {
         const userObj = JSON.parse(storedUser);
         this.displayName = userObj.displayName;
+        this.email = userObj.email;
       }
       })
     } catch (error) {
@@ -150,31 +152,49 @@ export class ReservationsComponent implements OnInit {
     }
   }
 
-  public async cancelReservation(date: string, time: string) {
-    const db = this.firebaseService.getFirestore();
-    const slotRef = doc(db, `reservations/${date}/${time}`, this.user!.email!);
-    const userDocRef = doc(db, 'users', this.user!.email!);
-
+  async cancelReservation(date: string, time: string) {
     try {
-      await deleteDoc(slotRef);
+        const email = this.email;
+        console.log(email,"test");
+        const requestBody = JSON.stringify({ date, time, email });
+        console.log('Sending request:', requestBody);  // Proveri JSON koji se šalje
 
-      const userSnap = await getDoc(userDocRef);
-      const userReservations = userSnap.data()?.['reservations'] || {};
-      const updatedReservations = { ...userReservations };
-      delete updatedReservations[date];
+        // Pošalji zahtev za brisanje rezervacije
+        const response = await fetch('http://localhost:3000/reservations/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: requestBody,
+        });
 
-      await setDoc(userDocRef, {
-        reservations: updatedReservations
-      }, { merge: true });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
 
-      const tempRef = doc(db, `reservations/${date}/${time}/temp`);
-      await setDoc(tempRef, {});
+        const data = await response.json();
+        console.log('Server response:', data);  // Proveri odgovor servera
 
-      await this.updateAvailableSlotsForRange();
+        // Ukloni rezervaciju iz localStorage
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            const userObj = JSON.parse(storedUser);
+
+            // Proveri da li rezervacije postoje za dati datum
+            if (userObj.reservations && userObj.reservations[date]) {
+                // Ukloni rezervaciju za određeni vremenski interval
+                delete userObj.reservations[date];  // Ukloni sve rezervacije za taj datum
+                // Ako je potrebno, možeš dodati kod za uklanjanje samo specifične vremenske intervale
+                // delete userObj.reservations[date][time]; // Ako želiš da ukloniš samo specifični vremenski interval
+            }
+
+            // Ažuriraj localStorage
+            localStorage.setItem('user', JSON.stringify(userObj));
+        }
     } catch (error) {
-      console.error('Error canceling reservation:', error);
+        console.error('Error cancelling reservation:', error);
     }
-  }
+}
 
   public isSlotReserved(date: string, time: string): boolean {
     const slot = this.slots.find(slot => slot.date === date && slot.time === time);
