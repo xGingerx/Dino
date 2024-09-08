@@ -25,7 +25,7 @@
 
 .navbar-brand span {
     color: #000000;
-    font-size: 24px;
+    font-size: 1.4rem;
     font-weight: bold;
 }
 .navbar ul{
@@ -55,7 +55,7 @@
     color: #000000;
     text-decoration: none;
     border-radius: 5px;
-    font-size: 18px;
+    font-size: 1.2rem;
     height: 100%;
     padding: 20px;
     transition: background-color 0.3s ease;
@@ -80,12 +80,15 @@
 .separator {
     border-left: 1px solid #ec973b;
     height: 30px;
-    margin: 0 20px;
+    margin: 0 15 px;
 }
 
 
 @media (max-width: 600px) {
     .navbar-links li span{
         display: none; 
+    }
+    .navbar-brand span {
+        display:none;
     }
 }

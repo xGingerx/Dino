@@ -1,11 +1,15 @@
-<p>Reserve a slot for the next 7 days:</p>
-<div *ngFor="let slot of slots">
-  <div *ngIf="isSlotAvailable(slot.date, slot.time) || isSlotReserved(slot.date, slot.time)">
-    <p>{{ slot.date }} {{ slot.time }} ({{ slot.reservationCount }}/{{ slot.totalSlots }})</p>
-    <button 
-      [disabled]="!slot.available && !slot.reservedByUser" 
-      (click)="slot.reservedByUser ? cancelReservation(slot.date, slot.time) : reserveSlot(slot.date, slot.time)">
-      {{ slot.reservedByUser ? 'Cancel Reservation' : 'Reserve' }}
-    </button>
+<main></main>
+
+<div class="reservations-container">
+  <h1>Reserve a slot for the next 7 days:</h1>
+  <div class="reservations-grid">
+    <div class="slot-container" *ngFor="let slot of slots">
+      <p>{{ slot.date }} {{ slot.time }} ({{ slot.reservationCount }}/{{ slot.totalSlots }})</p>
+      <button 
+        [disabled]="!slot.available && !slot.reservedByUser" 
+        (click)="slot.reservedByUser ? cancelReservation(slot.date, slot.time) : reserveSlot(slot.date, slot.time)">
+        {{ slot.reservedByUser ? 'Cancel Reservation' : 'Reserve' }}
+      </button>
+    </div>
   </div>
 </div>
