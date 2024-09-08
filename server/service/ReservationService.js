@@ -125,13 +125,60 @@ class ReservationService {
             }
             const reservationDoc = snapshot.docs[0];
             const reservation = reservationDoc.id;
-            if(reservation == "temp"){
-                
+
+            const timeIntervals = ["10 to 13", "13 to 16", "16 to 19", "19 to 22"]; 
+            let lastInterval=undefined;
+            for (const interval of timeIntervals) {
+                const intervalCollectionRef = collection(docRef, interval);
+                const snapshot = await getDocs(intervalCollectionRef);
+    
+                if (!snapshot.empty) {
+                    const reservationDoc = snapshot.docs[0];
+                    const reservation = reservationDoc.id;
+    
+                    if (reservation === email) {
+                        lastInterval = interval
+                        break;
+                    }
+                }
             }
-            console.log(reservations)
-            //await setDoc(doc(intervalCollectionRef, email), { email });
             
-            console.log(`Reservation added for ${email} on ${formattedDate} at ${time}.`);
+            if(reservation == "temp"){
+                await setDoc(doc(intervalCollectionRef, email), { email });
+                await deleteDoc(reservationDoc.ref);
+                console.log(`Reservation updated for ${email} on ${formattedDate} at ${time}.`);
+                if(lastInterval){
+                    const lastIntervalCollectionRef = collection(docRef, lastInterval);
+                    const lastIntervalSnapshot = await getDocs(lastIntervalCollectionRef);
+                    if (!lastIntervalSnapshot.empty) {
+                        const lastIntervalDoc = lastIntervalSnapshot.docs[0];
+                        await deleteDoc(lastIntervalDoc.ref);
+                        await setDoc(doc(lastIntervalCollectionRef, "temp"), { email });
+                        console.log(`Replaced existing reservation with "temp" for ${email} in ${lastInterval}.`);
+                    }
+                }
+                const user = await UserService.updateReservation(formattedDate, time, email);
+                const allReservations = {};
+                for (const interval of timeIntervals) {
+                    const intervalCollectionRef = collection(docRef, interval);
+                    const intervalSnapshot = await getDocs(intervalCollectionRef);
+
+                    if (!intervalSnapshot.empty) {
+                        allReservations[interval] = intervalSnapshot.docs.map(doc => doc.id)[0];
+                    } 
+                }
+                let returnDate = {
+                    user: user,
+                    reservation: {
+                        date: formattedDate,
+                        intervals: allReservations
+                    }
+                }
+                return returnDate;
+            } else if (reservation != email){
+                console.log(`A reservation already exists for ${formattedDate} at ${time} with ID ${reservation}.`);
+            }
+            return null            
         } catch (error) {
             console.error('Error adding reservation:', error);
             throw new Error('Failed to add reservation');
