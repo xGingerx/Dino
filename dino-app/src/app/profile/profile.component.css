@@ -1,10 +1,4 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #2c2c2c;
-    color: #ffffff;
-    margin: 0;
-    padding: 0;
-  }
+
   
   main {
     padding: 20px;
@@ -21,9 +15,11 @@ body {
   
   h3 {
     color: #b0b0b0;
-    margin-top: 40px;
+    margin: 20px 10px;
     font-weight: 400;
-  }
+    border-bottom: 1px solid rgba(255, 255, 255, 0.286);
+    width: 50%;
+}
   
   form {
     background-color: #333333;
@@ -64,6 +60,7 @@ body {
     padding: 10px 20px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-right: 10px;
   }
   
   button:hover {
@@ -110,21 +107,36 @@ body {
   
   p {
     color: #999999;
-    font-size: 14px;
+    font-size: 16px;
+    margin: 0px 10px;
+    padding-bottom: 20px;
   }
   
   @media (max-width: 600px) {
-    form, ul {
-      padding: 10px;
+    .list-item {
+        padding: 10px;
     }
     
-    img {
-      max-width: 100px;
-    }
   
-    button {
-      width: 100%;
-      margin-top: 10px;
-    }
+  }
+
+  .button-container {
+    display: flex; 
+    align-items: center; 
+    justify-content: flex-start; 
+  }
+
+  .spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #3498db;
+    border-radius: 50%;
+    width: 20px;  
+    height: 20px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
   

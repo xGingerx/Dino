@@ -28,18 +28,20 @@
     <div *ngIf="photoURL">
       <img [src]="photoURL" alt="User Photo" />
     </div>
-
-    <button type="submit">Save Changes</button>
+    <div class="button-container">
+      <button type="submit" [disabled]="isLoading">Save Changes</button>
+      <div *ngIf="isLoading" class="spinner"></div>
+    </div>
   </form>
 
   <h3>Your Reservations</h3>
-  <ul *ngIf="reservations.length > 0; else noReservations">
+  <ul class = "list-item" *ngIf="reservations.length > 0; else noReservations">
     <li *ngFor="let reservation of reservations">
       <p>{{ reservation.date }} - {{ reservation.time }}</p>
       <button (click)="cancelReservation(reservation.date, reservation.time)">Cancel Reservation</button>
     </li>
   </ul>
   <ng-template #noReservations>
-    <p>You have no reservations.</p>
+    <p >You have no reservations.</p>
   </ng-template>
 </div>

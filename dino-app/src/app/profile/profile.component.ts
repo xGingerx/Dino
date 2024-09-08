@@ -22,6 +22,7 @@ export class ProfileComponent implements OnInit {
   email: string = '';
   reservations: { date: string, time: string }[] = []; // Store user reservations
   selectedFile: File | null = null;
+  isLoading: boolean = false;
 
   constructor(private firebaseService: FirebaseService, private router: Router) {}
 
@@ -131,6 +132,7 @@ export class ProfileComponent implements OnInit {
 }
 
 async saveChanges() {
+  this.isLoading = true;
   try {
     const email = this.email;
     let photoURL = this.photoURL;
@@ -139,7 +141,7 @@ async saveChanges() {
       // Upload image and get the URL
       const uploadResponse = await fetch('http://localhost:3000/users/uploadImage', {
         method: 'POST',
-        body: this.createFormData(this.selectedFile, email), // Prosledi email
+        body: this.createFormData(this.selectedFile, email), 
       });
 
       if (!uploadResponse.ok) {
@@ -180,10 +182,11 @@ async saveChanges() {
       userObj.photoURL = photoURL;
       localStorage.setItem('user', JSON.stringify(userObj));
     }
+    this.isLoading = false;
     window.location.reload();
   } catch (error) {
     console.error('Error updating user data:', error);
-  }
+  } 
 }
 
 createFormData(file: File, email: string) {
