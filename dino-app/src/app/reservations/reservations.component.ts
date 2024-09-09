@@ -4,6 +4,7 @@ import { Firestore, doc, getDoc, setDoc, collection, deleteDoc, query, where, ge
 import { FirebaseService } from '../navbar/auth/firebase.service';
 import { Auth, User } from 'firebase/auth';
 import { format, addDays, isToday, isWithinInterval } from 'date-fns';
+import { response } from 'express';
 
 @Component({
   selector: 'app-reservations',
@@ -20,7 +21,7 @@ export class ReservationsComponent implements OnInit {
   slots: { date: string, time: string, reservationCount: number, totalSlots: number, available: boolean, reservedByUser: boolean }[] = [];
   startDate: Date = new Date();
   endDate: Date = addDays(new Date(), 7);
-  readonly slotLimit = 4; // Limit for each time slot
+  readonly slotLimit = 4; 
 
   constructor(private firebaseService: FirebaseService) {}
 
@@ -65,90 +66,94 @@ export class ReservationsComponent implements OnInit {
   }
   
   private async updateAvailableSlotsForRange() {
-    const dates = this.getDatesInRange(this.startDate, this.endDate);
-    
-    // Flatten the nested arrays
-    const slots = (await Promise.all(dates.map(async (date) => {
-      const formattedDate = format(date, 'd\\M\\yyyy');
-      const timeSlots = ['10 to 13', '13 to 16', '16 to 19', '19 to 22'];
+    try{
+      await fetch('http://localhost:3000/reservations/getActive', {
+        method:'GET',
+        headers:{
+          'Content-Type': 'application/json'
+        }
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      }).then(data => {
+        Object.keys(data).forEach(date => {          
+          Object.entries(data[date]).forEach(([timeSlot, value]) => {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            const reservations = user.reservations || {};
+            const reservedByUser = reservations[date]?.includes(timeSlot);
 
-      return Promise.all(timeSlots.map(async (time) => {
-        const slotRef = collection(this.firebaseService.getFirestore(), `reservations/${formattedDate}/${time}`);
-        const tempRef = doc(slotRef, 'temp');
-        const slotSnap = await getDoc(tempRef);
-
-        const reservationsSnap = await getDocs(query(slotRef, where('reservedBy', '!=', '')));
-
-        const reservedByUser = this.user ? (await getDocs(query(slotRef, where('reservedBy', '==', this.user.email!)))).size > 0 : false;
-
-        return {
-          date: formattedDate,
-          time,
-          reservationCount: reservationsSnap.size,
-          totalSlots: this.slotLimit,
-          available: reservationsSnap.size < this.slotLimit,
-          reservedByUser
-        };
-      }));
-    }))).flat(); 
-    this.slots = slots;
-  }
-
-  private getDatesInRange(startDate: Date, endDate: Date): Date[] {
-    const dates = [];
-    let currentDate = startDate;
-    while (isWithinInterval(currentDate, { start: startDate, end: endDate })) {
-      if (!isToday(currentDate)) {
-        dates.push(currentDate);
-      }
-      currentDate = addDays(currentDate, 1);
+            let slot = {
+              date: date,
+              time: timeSlot,
+              reservationCount: (value as number),
+              totalSlots: this.slotLimit,
+              available: (value as number) < this.slotLimit,
+              reservedByUser
+            }
+            this.slots.push(slot)
+          });
+        });
+        
+      })
+    } catch(error) {
+      console.error('Error fetching reservations:', error);
     }
-    console.log(dates)
-    return dates;
   }
 
   public async reserveSlot(date: string, time: string) {
+    console.log(date)
     if (!this.user) {
       console.error('User not authenticated');
       return;
     }
 
-    const db = this.firebaseService.getFirestore();
-    const slotRef = collection(db, `reservations/${date}/${time}`);
-    const userDocRef = doc(db, 'users', this.user.email!);
-
+    const email = this.user.email;
     try {
-      const reservationsSnap = await getDocs(slotRef);
-      const reservationCount = reservationsSnap.size;
-
-      if (reservationCount >= this.slotLimit) {
-        console.log('No available slots');
-        return;
-      }
-
-      const userSnap = await getDoc(userDocRef);
-      const userReservations = userSnap.data()?.['reservations'] || {};
-      const existingReservation = userReservations[date];
-
-      if (existingReservation) {
-        await this.cancelReservation(existingReservation.date, existingReservation.time);
-      }
-
-      await setDoc(userDocRef, {
-        reservations: {
-          [date]: { time, date }
+      await fetch('http://localhost:3000/reservations/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ date, time, email }),
+      }).then(response=>{
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
         }
-      }, { merge: true });
-
-      const reservationRef = doc(db, `reservations/${date}/${time}`, this.user.email!);
-      await setDoc(reservationRef, { reservedBy: this.user.email, reservationTime: new Date() });
-
-      const tempRef = doc(db, `reservations/${date}/${time}/temp`);
-      await deleteDoc(tempRef);
-
-      await this.updateAvailableSlotsForRange();
+        return response.json();
+      }).then(data=>{
+        console.log(data)
+        if(data == "full") {
+          const slot = this.slots.find(s => s.date === date && s.time === time);
+          if (slot) {
+            slot.reservationCount++;  
+            slot.available = slot.reservationCount < this.slotLimit;
+          }
+          alert("Slot is already full, try again!")
+        }
+        if(data && data != "full") {
+          localStorage.setItem('user', JSON.stringify(data));
+          const cancelSlot = this.slots.find(s=>s.date === date && s.reservedByUser === true);
+          if(cancelSlot){
+            cancelSlot.reservedByUser = false;
+            cancelSlot.reservationCount--;
+            cancelSlot.available = cancelSlot.reservationCount < this.slotLimit;
+          }
+          
+          const slot = this.slots.find(s => s.date === date && s.time === time);
+          if (slot) {
+            slot.reservedByUser = true;
+            slot.reservationCount++;  
+            slot.available = slot.reservationCount < this.slotLimit;
+          }
+        }
+        
+        
+      })
     } catch (error) {
-      console.error('Error reserving or canceling slot:', error);
+      console.error('Error fetching user data:', error);
     }
   }
 
@@ -174,7 +179,15 @@ export class ReservationsComponent implements OnInit {
 
         const data = await response.json();
         console.log('Server response:', data);  // Proveri odgovor servera
-
+        if(data) {
+          localStorage.setItem('user', JSON.stringify(data))
+          const slot = this.slots.find(s => s.date === date && s.time === time);
+          if(slot) {
+            slot.reservedByUser = false;
+            slot.reservationCount--;  
+            slot.available = slot.reservationCount < this.slotLimit;
+          }
+        }
         // Ukloni rezervaciju iz localStorage
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
@@ -182,7 +195,6 @@ export class ReservationsComponent implements OnInit {
 
             // Proveri da li rezervacije postoje za dati datum
             if (userObj.reservations && userObj.reservations[date]) {
-                // Ukloni rezervaciju za određeni vremenski interval
                 delete userObj.reservations[date];  // Ukloni sve rezervacije za taj datum
                 // Ako je potrebno, možeš dodati kod za uklanjanje samo specifične vremenske intervale
                 // delete userObj.reservations[date][time]; // Ako želiš da ukloniš samo specifični vremenski interval

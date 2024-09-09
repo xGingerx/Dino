@@ -116,9 +116,8 @@ class ReservationService {
 
     static async addUserReservation(date, time, email) {
         try {
-            date = new Date(date);
             const timeIntervals = ["10 to 13", "13 to 16", "16 to 19", "19 to 22"]; 
-            const formattedDate = ReservationService.formatDate(date);
+            const formattedDate = date;
             const docRef = doc(dbReservations, formattedDate);
             const timeCollection = collection(docRef, time)
             const intervals = await getDocs(timeCollection);
@@ -126,7 +125,7 @@ class ReservationService {
             const addInterval = intervals.docs.map(doc => doc.id);
             if(addInterval.length > 4) {
                 console.log(`Cannot add ${email} to ${formattedDate} at ${time}. Slot is full.`);
-                return null;
+                return "full";
             }
             if(addInterval.includes(email)) {
                 console.log(`User ${email} is already reserved for ${formattedDate} at this interval.`);
@@ -170,8 +169,7 @@ class ReservationService {
 
     static async cancelReservation(date, time, email) {
         try {
-            date = new Date(date);
-            const formattedDate = ReservationService.formatDate(date);
+            const formattedDate = date;
             const docRef = doc(dbReservations, formattedDate);
             const timeCollection = collection(docRef, time);
             const snapshot = await getDocs(timeCollection);
