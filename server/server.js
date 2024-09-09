@@ -21,31 +21,20 @@ app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
 
-const ws_port = 3002
-const DEFAULT_INTERVAL = 1000;
+/* const ws_port = 3002
 
 const wss = new WebSocket.Server({ port: ws_port });
 
 wss.on("connection", (ws) => {
     console.log("Client connected");
-    let timer = setInterval(generateRandomNumbers, DEFAULT_INTERVAL);
-
-    const generateRandomNumbers = () => {
-        if (ws.readyState === WebSocket.OPEN) {
-           const randomValue = Math.floor(Math.random() * 100);
-           ws.send(randomValue.toString());
-        }
-     };
-
-    ws.on("message", (message) => {
-        const newInterval = JSON.parse(message);
-        console.log(`New interval: ${newInterval} second(s)`);
-        if (!isNaN(newInterval) && newInterval > 0) {
-           clearInterval(timer);
-           timer = setInterval(generateRandomNumbers, newInterval * 1_000);
-        }
-     });
-
+    const getReservations = async () => {
+      if (ws.readyState === WebSocket.OPEN) {
+         const reservations = await ReservationService.getAllReservations();
+         console.log(reservations)
+         ws.send(reservations.toString());
+      }
+   };
+    let timer = setInterval(getReservations , 10000);
 
     ws.on("close", () => {
         console.log("Client disconnected");
@@ -54,4 +43,4 @@ wss.on("connection", (ws) => {
 })
 
 
-console.log(`WebSocket server listening on port ${ws_port}`);
+console.log(`WebSocket server listening on port ${ws_port}`); */

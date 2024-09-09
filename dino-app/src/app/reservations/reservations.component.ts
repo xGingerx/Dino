@@ -4,9 +4,6 @@ import { Firestore, doc, getDoc, setDoc, collection, deleteDoc, query, where, ge
 import { FirebaseService } from '../navbar/auth/firebase.service';
 import { Auth, User } from 'firebase/auth';
 import { format, addDays, isToday, isWithinInterval } from 'date-fns';
-import { response } from 'express';
-import { catchError, retry, throwError } from 'rxjs';
-import { WebSocketService } from './services/web-socket.service';
 
 @Component({
   selector: 'app-reservations',
@@ -26,19 +23,7 @@ export class ReservationsComponent implements OnInit {
   readonly slotLimit = 4; 
   public interval: number = 1;
 
-  constructor(private firebaseService: FirebaseService, 
-          private ws: WebSocketService
-  ) {
-    this.ws.webSocket$
-      .pipe(
-        catchError((error) => {
-          return throwError(() => new Error(error));
-        }),
-        retry({ delay: 5_000 }),
-      )
-      .subscribe((data: string) => {
-        this.handleReservationData(data);
-      });
+  constructor( private firebaseService: FirebaseService) {
 
   }
 
@@ -53,6 +38,7 @@ export class ReservationsComponent implements OnInit {
         this.displayName = '';
       }
     });
+    
   }
 
   async fetchUserData(email: string) {
