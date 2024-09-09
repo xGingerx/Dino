@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FirebaseService } from './auth/firebase.service'; // Adjust the path if needed
-import { Auth, signInWithPopup, GoogleAuthProvider, User } from 'firebase/auth';
-import { Firestore, doc, getDoc, setDoc } from 'firebase/firestore';
-import { response } from 'express';
+import { FirebaseService } from './auth/firebase.service';
+import { signInWithPopup, GoogleAuthProvider, User } from 'firebase/auth';
 
 @Component({
   selector: 'app-navbar',

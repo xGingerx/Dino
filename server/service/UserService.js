@@ -1,5 +1,5 @@
 const User = require('../entity/user');
-const { query, where, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, dbReservations, dbUsers } = require('../firebase/firebase');
+const { query, where, doc, getDoc, setDoc, updateDoc, getDocs, dbUsers } = require('../firebase/firebase');
 
 class UserService {
   static async findOrCreateUser(userData) {
@@ -40,10 +40,9 @@ class UserService {
     }
   }
 
-  // Fetch user by email
   static async getUserByEmail(email) {
     try {
-      const q = query(dbUsers, where("email", "==", email)); // Create query for email
+      const q = query(dbUsers, where("email", "==", email));
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
@@ -65,22 +64,18 @@ class UserService {
 
   static async updateUser(email, displayName, photoURL) {
     try {
-      const userDocRef = doc(dbUsers, email); // Use doc() to get a reference by email
+      const userDocRef = doc(dbUsers, email);
 
-      // Prepare update data
       const updateData = {
         displayName
       };
 
-      // If photoURL is provided, add it to the update data
       if (photoURL) {
         updateData.photoURL = photoURL;
       }
 
-      // Update the user data in the database
       await updateDoc(userDocRef, updateData);
 
-      // Return updated data
       const updatedUserSnapshot = await getDoc(userDocRef);
       return updatedUserSnapshot.data();
     } catch (error) {
@@ -106,7 +101,6 @@ class UserService {
       user.reservations = user.reservations || {};
       user.reservations[date] = time;
 
-      // Update the user data in the database
       const userDocRef = doc(dbUsers, email);
       await updateDoc(userDocRef, { reservations: user.reservations });
 
@@ -134,7 +128,6 @@ class UserService {
       user.reservations = user.reservations || {};
       delete user.reservations[date];
 
-      // Update the user data in the database
       const userDocRef = doc(dbUsers, email);
       await updateDoc(userDocRef, { reservations: user.reservations });
 

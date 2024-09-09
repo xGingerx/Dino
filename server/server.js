@@ -39,7 +39,6 @@ wss.on("connection", (ws) => {
 
     ws.on("message", (message) => {
         const newInterval = JSON.parse(message);
-        // Update the interval if received a new value from the client
         console.log(`New interval: ${newInterval} second(s)`);
         if (!isNaN(newInterval) && newInterval > 0) {
            clearInterval(timer);

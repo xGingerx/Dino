@@ -5,7 +5,6 @@
   </div>
 
   <ul class="navbar-links" id="navbar-links">
-    <!-- Conditionally display the Profile link with user display name -->
     <li *ngIf="isUserLoggedIn()" [ngClass]="{'active': isActive('/profile')}">
       <a routerLink="/profile">
         <img src="profile.svg" alt="Profile Icon" />

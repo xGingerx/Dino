@@ -1,4 +1,4 @@
-const { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, deleteField, dbReservations, dbUsers } = require('../firebase/firebase');
+const { doc, getDoc, setDoc, deleteDoc, collection, getDocs, dbReservations } = require('../firebase/firebase');
 const cron = require('node-cron');
 const UserService = require('./UserService');
 
@@ -100,12 +100,8 @@ class ReservationService {
                     const timeSlotCollectionRef = collection(docSnap.ref, interval); 
                     const timeSlotDocs = await getDocs(timeSlotCollectionRef);  
                     allReservations[date][interval] = timeSlotDocs.size - 1;
-                    //timeSlotDocs.forEach(doc => {
-                     //   allReservations[date][interval].push(doc.id);  
-                    //});
                 }
             }
-    
             return allReservations;
         } catch (error) {
             console.error('Error fetching reservations:', error);

@@ -1,24 +1,24 @@
 main {
-  max-width: 50rem; /* Ograničava širinu glavnog sadržaja na 50rem */
-  margin: 0 auto; /* Centriranje glavnog sadržaja */
-  margin-top: 5rem; /* Vrhunski margina */
+  max-width: 50rem;
+  margin: 0 auto;
+  margin-top: 5rem;
 }
 
 h1 {
-  margin-top: 1.25rem; /* Donji margina */
-  margin-bottom: 1.25rem; /* Donji margina */
-  text-align: center; /* Centriranje h2 naslova */
-  color: #000000; /* Boja za naslov */
-  font-size: 2.4rem; /* Veća veličina fonta za naslov */
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  color: #000000;
+  font-size: 2.4rem;
   font-weight: bold;
 }
 
 h2 {
-  margin-top: 1.25rem; /* Donji margina */
-  margin-bottom: 1.25rem; /* Donji margina */
-  text-align: center; /* Centriranje h2 naslova */
-  color: #000000; /* Boja za naslov */
-  font-size: 1.8rem; /* Veća veličina fonta za naslov */
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  color: #000000;
+  font-size: 1.8rem;
   font-weight: bold;
 }
 
@@ -28,16 +28,16 @@ h2 {
 }
 
 form {
-  background-color: #F2BB76; /* Tamna pozadina forme */
-  border-radius: 0.5rem; /* Zaobljeni uglovi */
-  padding: 1.25rem; /* Unutrašnji razmak */
-  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.1); /* Sjena */
-  margin: 0 auto; /* Centriranje forme */
-  max-width: 80%; /* Maksimalna širina za formu */
+  background-color: #F2BB76;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  max-width: 80%;
 }
 
 label {
-  color: #000000; /* Svetlija boja za bolju vidljivost */
+  color: #000000;
   font-weight: bold;
   margin-bottom: 0.5rem;
   font-size: 1.2rem;
@@ -61,7 +61,7 @@ label {
 .not-writable {
   margin-left: 1%;
   margin-bottom: 1%;
-  color: #030303; /* Svetlija boja teksta */
+  color: #030303;
   border: none;
   padding: 0.625rem;
   border-radius: 0.25rem;
@@ -74,19 +74,19 @@ label {
   width: 50%;
   margin-left: 1%;
   margin-bottom: 1%;
-  background-color: rgb(255, 219, 172); /* Tamnija pozadina */
-  color: #000000; /* Svetlija boja teksta */
+  background-color: rgb(255, 219, 172);
+  color: #000000;
   border: none;
   padding: 0.625rem;
   border-radius: 0.25rem;
 }
 
 p {
-  color: #000000; /* Svetlija boja za bolju vidljivost */
-  font-size: 1rem; /* Veličina fonta */
-  margin: 0 auto; /* Centriranje paragrafa */
-  padding-bottom: 1.25rem; /* Donji unutrašnji razmak */
-  text-align: center; /* Centriranje teksta */
+  color: #000000;
+  font-size: 1rem;
+  margin: 0 auto;
+  padding-bottom: 1.25rem;
+  text-align: center;
 }
 
 img {
@@ -95,7 +95,7 @@ img {
   margin-bottom: 1.25rem;
   margin-left: auto;
   margin-right: auto;
-  max-width: 40%; /* Maksimalna širina slike */
+  max-width: 40%;
 }
 
 ul {
@@ -105,26 +105,26 @@ ul {
 
 li {
   background-color: #F2BB76;
-  border-radius: 0.5rem; /* Zaobljeni uglovi */
-  padding: 1rem; /* Unutrašnji razmak */
-  margin-bottom: 0.625rem; /* Donji margina */
-  max-width: 80%; /* Maksimalna širina za stavke u listi */
-  margin: 0.625rem auto; /* Centriranje stavki u listi */
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.625rem;
+  max-width: 80%;
+  margin: 0.625rem auto;
 }
 
 li p {
-  color: #000000; /* Svetlija boja za bolju vidljivost */
+  color: #000000;
 }
 
 .button-container {
   display: flex;
   align-items: center;
-  justify-content: center; /* Centriranje dugmadi unutar button-container-a */
+  justify-content: center;
 }
 
 button {
-  background-color: #ffffff; /* Plava pozadina */
-  color: #000000; /* Belo slovo za bolji kontrast */
+  background-color: #ffffff;
+  color: #000000;
   border: none;
   border-radius: 0.25rem;
   padding: 0.625rem 1.25rem;
@@ -134,21 +134,21 @@ button {
 }
 
 button:hover {
-  background-color: rgb(255, 220, 180); /* Tamnija plava prilikom hover-a */
+  background-color: rgb(255, 220, 180);
 }
 
 .spinner {
-  border: 0.25rem solid rgba(0, 0, 0, 0.1); /* Granična širina */
+  border: 0.25rem solid rgba(0, 0, 0, 0.1);
   border-left-color: #3498db;
   border-radius: 50%;
-  width: 1.25rem; /* Veličina spinnera */
+  width: 1.25rem;
   height: 1.25rem;
   animation: spin 1s linear infinite;
 }
 
-@media (max-width: 600px) { /* 600px prevedeno u rem, pod pretpostavkom da je osnovna veličina fonta 16px */
+@media (max-width: 600px) {
   .list-item {
-    padding: 0.625rem; /* Unutrašnji razmak */
-    margin: 0.625rem auto; /* Centriranje stavki liste na manjim ekranima */
+    padding: 0.625rem;
+    margin: 0.625rem auto;
   }
 }

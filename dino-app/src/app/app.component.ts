@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, RouterOutlet } from '@angular/router';
-import { Auth, signInWithPopup, GoogleAuthProvider, User } from 'firebase/auth';
+import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
 
 @Component({
@@ -9,7 +8,7 @@ import { NavbarComponent } from './navbar/navbar.component';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarComponent]  // Import RouterModule here
+  imports: [CommonModule, RouterModule, NavbarComponent]
 })
 export class AppComponent {
 }
