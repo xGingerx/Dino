@@ -1,5 +1,8 @@
 import { createRequire } from 'module';const require = createRequire(import.meta.url);
 import {
+  require_events
+} from "./chunk-EV3HP44F.js";
+import {
   Component,
   FirebaseError,
   LogLevel,
@@ -18,9 +21,6 @@ import {
   isSafari,
   registerVersion
 } from "./chunk-L5XBNHB7.js";
-import {
-  require_events
-} from "./chunk-EV3HP44F.js";
 import {
   __async,
   __commonJS,

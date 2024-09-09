@@ -1,9 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Firestore, doc, getDoc, setDoc, collection, deleteDoc, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import { FirebaseService } from '../navbar/auth/firebase.service';
-import { Auth, User } from 'firebase/auth';
-import { format, addDays, isToday, isWithinInterval } from 'date-fns';
+import { User } from 'firebase/auth';
+import { addDays } from 'date-fns';
 import { Subscription } from 'rxjs';
 import { SocketService } from './services/socket.service';
 
@@ -22,17 +21,15 @@ export class ReservationsComponent implements OnInit {
   slots: { date: string, time: string, reservationCount: number, totalSlots: number, available: boolean, reservedByUser: boolean }[] = [];
   startDate: Date = new Date();
   endDate: Date = addDays(new Date(), 7);
+  isLoading: boolean = false;
   readonly slotLimit = 4; 
   public interval: number = 1;
-
-
   private messageSubscription: Subscription;
 
   constructor(private socketService: SocketService, private firebaseService: FirebaseService) {
     this.messageSubscription = this.socketService
       .on('message')
       .subscribe((data) => {
-        alert("Someone reserved or canceled reservation. Changes updated!")
         data = JSON.parse(data);
         Object.keys(data).forEach(date => {          
           Object.entries(data[date]).forEach(([timeSlot, value]) => {
@@ -98,6 +95,7 @@ export class ReservationsComponent implements OnInit {
   }
   
   private async updateAvailableSlotsForRange() {
+    this.isLoading = true;
     try{
       await fetch('http://localhost:3000/reservations/getActive', {
         method:'GET',
@@ -128,11 +126,11 @@ export class ReservationsComponent implements OnInit {
             this.slots.push(slot)
           });
         });
-        
       })
     } catch(error) {
       console.error('Error fetching reservations:', error);
     }
+    this.isLoading = false;
   }
 
   public async reserveSlot(date: string, time: string) {
@@ -194,9 +192,8 @@ export class ReservationsComponent implements OnInit {
         const email = this.email;
         console.log(email,"test");
         const requestBody = JSON.stringify({ date, time, email });
-        console.log('Sending request:', requestBody);  // Proveri JSON koji se šalje
+        console.log('Sending request:', requestBody);
 
-        // Pošalji zahtev za brisanje rezervacije
         const response = await fetch('http://localhost:3000/reservations/delete', {
             method: 'POST',
             headers: {
@@ -210,7 +207,7 @@ export class ReservationsComponent implements OnInit {
         }
 
         const data = await response.json();
-        console.log('Server response:', data);  // Proveri odgovor servera
+        console.log('Server response:', data); 
         if(data) {
           localStorage.setItem('user', JSON.stringify(data))
           const slot = this.slots.find(s => s.date === date && s.time === time);
@@ -234,13 +231,5 @@ export class ReservationsComponent implements OnInit {
   public isSlotAvailable(date: string, time: string): boolean {
     const slot = this.slots.find(slot => slot.date === date && slot.time === time);
     return slot ? slot.available : false;
-  }
-
-  private handleReservationData(data: string) {
-    try{
-      console.log(data)
-    }catch(error) {
-
-    }
   }
 }

@@ -2,6 +2,7 @@
 
 <div class="reservations-container">
   <h1>Reserve a slot for the next 7 days:</h1>
+  <h2 *ngIf="isLoading">Loading...</h2>
   <div class="reservations-grid">
     <div class="slot-container" *ngFor="let slot of slots">
       <p>{{ slot.date }} {{ slot.time }} ({{ slot.reservationCount }}/{{ slot.totalSlots }})</p>

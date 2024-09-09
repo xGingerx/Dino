@@ -1,10 +1,10 @@
 import { createRequire } from 'module';const require = createRequire(import.meta.url);
 import {
-  require_buffer
-} from "./chunk-S6G52CGC.js";
-import {
   require_events
 } from "./chunk-EV3HP44F.js";
+import {
+  require_buffer
+} from "./chunk-S6G52CGC.js";
 import {
   __commonJS,
   __export,

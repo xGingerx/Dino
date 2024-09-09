@@ -1,58 +1,67 @@
 main {
-    max-width: 50rem; /* Ograničava širinu glavnog sadržaja na 50rem */
-    margin: 0 auto; /* Centriranje glavnog sadržaja */
-    margin-top: 5rem; /* Vrhunski margina */
+    max-width: 50rem;
+    margin: 0 auto;
+    margin-top: 5rem;
   }
   
   h1 {
-    margin-top: 1.25rem; /* Donji margina */
-    margin-bottom: 2.5rem; /* Donji margina */
-    text-align: center; /* Centriranje h2 naslova */
-    color: #000000; /* Boja za naslov */
-    font-size: 2.4rem; /* Veća veličina fonta za naslov */
+    margin-top: 1.25rem;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    color: #000000;
+    font-size: 2.4rem;
+    font-weight: bold;
+  }
+
+  h2 {
+    margin-top: 1.25rem;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    color: #000000;
+    font-size: 2rem;
     font-weight: bold;
   }
 
   .reservations-container {
     max-width: 80%;
-    margin: 2rem auto; /* Centriranje i razmak */
-    padding: 1rem; /* Unutrašnji razmak */
-    background-color: #F2BB76; /* Tamnija pozadina */
-    border-radius: 0.25rem; /* Zaobljeni uglovi */
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: #F2BB76;
+    border-radius: 0.25rem;
     text-align: center;
   }
   
   .reservations-container p {
-    font-size: 1.2rem; /* Veličina fonta */
-    color: #000000; /* Boja teksta */
+    font-size: 1.2rem;
+    color: #000000;
     margin-bottom: 1rem;
   }
   
   .reservations-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 stupca za 4 slota u svakom redu */
-    gap: 1rem; /* Razmak između ćelija */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
   }
   
   .slot-container {
-    background-color: #ffffff; /* Pozadina za slotove */
-    border-radius: 0.25rem; /* Zaobljeni uglovi */
-    padding: 0.75rem; /* Unutrašnji razmak */
-    box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.1); /* Sjena */
-    margin-bottom: 2rem; /* Dodani donji margin za sve slotove na velikim ekranima */
+    background-color: #ffffff;
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
   }
   
   .slot-container p {
-    font-size: 1.2rem; /* Veličina fonta za tekst unutar slotova */
-    color: #000000; /* Boja teksta */
+    font-size: 1.2rem;
+    color: #000000;
     margin-top: 1rem;
-    margin-bottom: 1rem; /* Donji margina */
+    margin-bottom: 1rem;
     font-weight: bold;
   }
   
   .slot-container button {
-    background-color: #000000; /* Boja dugmeta */
-    color: #ffffff; /* Boja teksta na dugmetu */
+    background-color: #000000;
+    color: #ffffff;
     border: none;
     border-radius: 0.25rem;
     padding: 0.5rem 1rem;
@@ -61,24 +70,24 @@ main {
   }
   
   .slot-container button:hover {
-    background-color: #444444; /* Tamnija nijansa prilikom hover-a */
+    background-color: #444444;
   }
   
   .slot-container button:disabled {
-    background-color: #cccccc; /* Siva boja za onemogućena dugmad */
-    cursor: not-allowed; /* Onemogućen pokazivač */
+    background-color: #cccccc;
+    cursor: not-allowed;
   }
-  
+
   @media (max-width: 600px) {
     .reservations-grid {
-      grid-template-columns: repeat(2, 1fr); /* Prikaz 2 slota po redu na manjim ekranima */
+      grid-template-columns: repeat(2, 1fr);
     }
-    /* Dodavanje donjeg margin samo za 3. i 4. slot u svakom redu na malim ekranima */
+
     .slot-container:nth-child(3), 
     .slot-container:nth-child(4) {
       margin-bottom: 2rem;
     }
-    /* Uklanjanje donjeg margina za ostale slotove na malim ekranima */
+    
     .slot-container:nth-child(1):not(:nth-child(3)),
     .slot-container:nth-child(2):not(:nth-child(4)) {
       margin-bottom: 0;

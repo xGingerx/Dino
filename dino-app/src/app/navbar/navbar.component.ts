@@ -79,6 +79,7 @@ export class NavbarComponent implements OnInit {
     .then(data => {
       console.log('User created successfully:', data);
       localStorage.setItem('user', JSON.stringify(data));
+      window.location.reload();
     })
     .catch(error => {
       console.error('There was an error!', error);

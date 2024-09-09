@@ -1,5 +1,8 @@
 import { createRequire } from 'module';const require = createRequire(import.meta.url);
 import {
+  require_buffer
+} from "./chunk-S6G52CGC.js";
+import {
   Component,
   ErrorFactory,
   FirebaseError,
@@ -24,9 +27,6 @@ import {
   querystringDecode,
   registerVersion
 } from "./chunk-L5XBNHB7.js";
-import {
-  require_buffer
-} from "./chunk-S6G52CGC.js";
 import {
   __async,
   __asyncGenerator,
