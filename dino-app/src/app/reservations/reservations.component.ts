@@ -5,6 +5,8 @@ import { FirebaseService } from '../navbar/auth/firebase.service';
 import { Auth, User } from 'firebase/auth';
 import { format, addDays, isToday, isWithinInterval } from 'date-fns';
 import { response } from 'express';
+import { catchError, retry, throwError } from 'rxjs';
+import { WebSocketService } from './services/web-socket.service';
 
 @Component({
   selector: 'app-reservations',
@@ -22,8 +24,23 @@ export class ReservationsComponent implements OnInit {
   startDate: Date = new Date();
   endDate: Date = addDays(new Date(), 7);
   readonly slotLimit = 4; 
+  public interval: number = 1;
 
-  constructor(private firebaseService: FirebaseService) {}
+  constructor(private firebaseService: FirebaseService, 
+          private ws: WebSocketService
+  ) {
+    this.ws.webSocket$
+      .pipe(
+        catchError((error) => {
+          return throwError(() => new Error(error));
+        }),
+        retry({ delay: 5_000 }),
+      )
+      .subscribe((data: string) => {
+        this.handleReservationData(data);
+      });
+
+  }
 
   ngOnInit(): void {
     const auth = this.firebaseService.getAuth();
@@ -201,5 +218,13 @@ export class ReservationsComponent implements OnInit {
   public isSlotAvailable(date: string, time: string): boolean {
     const slot = this.slots.find(slot => slot.date === date && slot.time === time);
     return slot ? slot.available : false;
+  }
+
+  private handleReservationData(data: string) {
+    try{
+      console.log(data)
+    }catch(error) {
+
+    }
   }
 }
