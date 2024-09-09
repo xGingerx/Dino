@@ -22,8 +22,8 @@ import {
   onLog,
   registerVersion,
   setLogLevel
-} from "./chunk-7YXZMNPG.js";
-import "./chunk-INDP74QC.js";
+} from "./chunk-L5XBNHB7.js";
+import "./chunk-LKDWXENB.js";
 
 // node_modules/firebase/app/dist/index.mjs
 var name = "firebase";

@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Firestore, doc, getDoc, setDoc, collection, deleteDoc, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import { FirebaseService } from '../navbar/auth/firebase.service';
 import { Auth, User } from 'firebase/auth';
 import { format, addDays, isToday, isWithinInterval } from 'date-fns';
+import { Subscription } from 'rxjs';
+import { SocketService } from './services/socket.service';
 
 @Component({
   selector: 'app-reservations',
@@ -23,9 +25,36 @@ export class ReservationsComponent implements OnInit {
   readonly slotLimit = 4; 
   public interval: number = 1;
 
-  constructor( private firebaseService: FirebaseService) {
 
+  private messageSubscription: Subscription;
+
+  constructor(private socketService: SocketService, private firebaseService: FirebaseService) {
+    this.messageSubscription = this.socketService
+      .on('message')
+      .subscribe((data) => {
+        alert("Someone reserved or canceled reservation. Changes updated!")
+        data = JSON.parse(data);
+        Object.keys(data).forEach(date => {          
+          Object.entries(data[date]).forEach(([timeSlot, value]) => {
+            const slot = this.slots.find(s => s.date === date && s.time === timeSlot);
+            if(slot){
+              slot.reservationCount = (value as number)
+              slot.available = (value as number) < this.slotLimit
+            }
+          }
+        )})
+      });
   }
+
+  sendMessage() {
+    this.socketService.emit('message', { text: "Updated reservation" });
+  }
+
+  ngOnDestroy() {
+    this.messageSubscription.unsubscribe();
+  }
+
+  
 
   ngOnInit(): void {
     const auth = this.firebaseService.getAuth();
@@ -153,7 +182,7 @@ export class ReservationsComponent implements OnInit {
           }
         }
         
-        
+        this.sendMessage()
       })
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -191,6 +220,7 @@ export class ReservationsComponent implements OnInit {
             slot.available = slot.reservationCount < this.slotLimit;
           }
         }
+        this.sendMessage()
     } catch (error) {
         console.error('Error cancelling reservation:', error);
     }

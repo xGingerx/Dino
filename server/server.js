@@ -1,6 +1,12 @@
 const express = require('express');
-const WebSocket = require('ws')
 const cors = require('cors');
+const http = require("http").createServer();
+const io = require("socket.io")(http, {
+  cors: {
+    origin: "*",
+  },
+});
+
 const ReservationController = require('./controller/ReservationController');
 const UserController = require('./controller/UserController')
 const ReservationService = require('./service/ReservationService');
@@ -20,6 +26,24 @@ app.use('/reservations', ReservationController)
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
+
+io.on('connection', (socket) => {
+   console.log('New client connected');
+ 
+   socket.on('message', async (data) => {
+      const reservations = await ReservationService.getAllReservations();
+      io.emit('message', JSON.stringify(reservations)); 
+   });
+ 
+   socket.on('disconnect', () => {
+     console.log('Client disconnected');
+   });
+ });
+
+
+http.listen(3002, () => {
+   console.log(`Server is running at http://localhost:${3002}`);
+ });
 
 /* const ws_port = 3002
 
