@@ -13,11 +13,8 @@ ReservationController.post('/create', async (req, res)=>{
     }
 })
 
-ReservationController.post('/get', (req, res)=>{
 
-})
-
-ReservationController.post('/getActive', async (req, res)=>{
+ReservationController.get('/getActive', async (req, res)=>{
     try { 
         const reservation = await ReservationService.getAllReservations();
         res.status(200).json(reservation);

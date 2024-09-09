@@ -89,17 +89,20 @@ class ReservationService {
             const timeIntervals = ["10 to 13", "13 to 16", "16 to 19", "19 to 22"]; 
     
             for (const docSnap of snapshot.docs) {
-                const date = docSnap.id;  
+                const date = docSnap.id; 
+                if(date == this.formatDate(new Date())) {
+                    continue;
+                } 
                 
                 allReservations[date] = {};  
     
                 for (const interval of timeIntervals) {
                     const timeSlotCollectionRef = collection(docSnap.ref, interval); 
                     const timeSlotDocs = await getDocs(timeSlotCollectionRef);  
-                    
-                    timeSlotDocs.forEach(doc => {
-                        allReservations[date][interval] = doc.id || "";  
-                    });
+                    allReservations[date][interval] = timeSlotDocs.size - 1;
+                    //timeSlotDocs.forEach(doc => {
+                     //   allReservations[date][interval].push(doc.id);  
+                    //});
                 }
             }
     
@@ -113,130 +116,87 @@ class ReservationService {
 
     static async addUserReservation(date, time, email) {
         try {
-            date = new Date(date)
+            date = new Date(date);
+            const timeIntervals = ["10 to 13", "13 to 16", "16 to 19", "19 to 22"]; 
             const formattedDate = ReservationService.formatDate(date);
             const docRef = doc(dbReservations, formattedDate);
-            
-            const intervalCollectionRef = collection(docRef, time);
-            const snapshot = await getDocs(intervalCollectionRef);
-            if (snapshot.empty) {
-                console.log(`No reservations found for ${formattedDate} at ${time}.`);
+            const timeCollection = collection(docRef, time)
+            const intervals = await getDocs(timeCollection);
+
+            const addInterval = intervals.docs.map(doc => doc.id);
+            if(addInterval.length > 4) {
+                console.log(`Cannot add ${email} to ${formattedDate} at ${time}. Slot is full.`);
                 return null;
             }
-            const reservationDoc = snapshot.docs[0];
-            const reservation = reservationDoc.id;
+            if(addInterval.includes(email)) {
+                console.log(`User ${email} is already reserved for ${formattedDate} at this interval.`);
+                return null;
+            }
 
-            const timeIntervals = ["10 to 13", "13 to 16", "16 to 19", "19 to 22"]; 
-            let lastInterval=undefined;
-            for (const interval of timeIntervals) {
+            let lastFoundInterval = undefined;
+            for(const interval of timeIntervals) {
                 const intervalCollectionRef = collection(docRef, interval);
                 const snapshot = await getDocs(intervalCollectionRef);
-    
-                if (!snapshot.empty) {
-                    const reservationDoc = snapshot.docs[0];
-                    const reservation = reservationDoc.id;
-    
-                    if (reservation === email) {
-                        lastInterval = interval
+                const existingReservations = snapshot.docs.map(doc => doc.id);
+
+                if(existingReservations.includes(email) && interval != time) {
+                    lastFoundInterval = interval;
+                    break;
+                }
+            }
+            
+            if(lastFoundInterval) {
+                const lastIntervalCollectionRef = collection(docRef, lastFoundInterval);
+                const lastIntervalSnapshot = await getDocs(lastIntervalCollectionRef);
+                for (const docSnap of lastIntervalSnapshot.docs) {
+                    if (docSnap.id === email) {
+                        await deleteDoc(docSnap.ref);
+                        console.log(`Deleted ${email} from the ${lastFoundInterval} interval.`);
                         break;
                     }
                 }
             }
-            
-            if(reservation == "temp"){
-                await setDoc(doc(intervalCollectionRef, email), { email });
-                await deleteDoc(reservationDoc.ref);
-                console.log(`Reservation updated for ${email} on ${formattedDate} at ${time}.`);
-                if(lastInterval){
-                    const lastIntervalCollectionRef = collection(docRef, lastInterval);
-                    const lastIntervalSnapshot = await getDocs(lastIntervalCollectionRef);
-                    if (!lastIntervalSnapshot.empty) {
-                        const lastIntervalDoc = lastIntervalSnapshot.docs[0];
-                        await deleteDoc(lastIntervalDoc.ref);
-                        await setDoc(doc(lastIntervalCollectionRef, "temp"), { email });
-                        console.log(`Replaced existing reservation with "temp" for ${email} in ${lastInterval}.`);
-                    }
-                }
-                const user = await UserService.updateReservation(formattedDate, time, email);
-                const allReservations = {};
-                for (const interval of timeIntervals) {
-                    const intervalCollectionRef = collection(docRef, interval);
-                    const intervalSnapshot = await getDocs(intervalCollectionRef);
-
-                    if (!intervalSnapshot.empty) {
-                        allReservations[interval] = intervalSnapshot.docs.map(doc => doc.id)[0];
-                    } 
-                }
-                let returnDate = {
-                    user: user,
-                    reservation: {
-                        date: formattedDate,
-                        intervals: allReservations
-                    }
-                }
-                return returnDate;
-            } else if (reservation != email){
-                console.log(`A reservation already exists for ${formattedDate} at ${time} with ID ${reservation}.`);
-            }
-            return null            
+            await setDoc(doc(timeCollection, email), { email });
+            console.log(`Added ${email} to the ${time} interval on ${formattedDate}.`);
+            const user = UserService.updateReservation(formattedDate, time, email);
+            return user;
+    
         } catch (error) {
             console.error('Error adding reservation:', error);
             throw new Error('Failed to add reservation');
         }
-
     }
+    
 
     static async cancelReservation(date, time, email) {
         try {
-          console.log(`Trying to find reservation for date: ${date}`);
-      
-          // Reference to the document for the specific date in the reservations collection
-          const docRef = doc(dbReservations, date);
-          const docSnapshot = await getDoc(docRef);
-      
-          if (!docSnapshot.exists()) {
-            console.log(`No reservations found for ${date}.`);
-            return null;
-          }
-      
-          console.log(`Document data for ${date}:`, docSnapshot.data());
-      
-          // Reference to the time slot collection
-          const timeCollectionRef = collection(docRef, time); // Collection for the time slot
-          const emailDocRef = doc(timeCollectionRef, email); // Document for the user in that time slot
-      
-          // Check if the reservation exists
-          const emailDocSnapshot = await getDoc(emailDocRef);
-          if (!emailDocSnapshot.exists()) {
-            console.log(`No reservation found for email ${email} in time slot ${time}.`);
-            return null;
-          }
-      
-          // Add a temporary document to prevent the collection from being deleted
-          const tempDocRef = doc(timeCollectionRef, "temp");
-          await setDoc(tempDocRef, { temp: true });
-          console.log(`Temporary document created in time slot ${time} to prevent collection deletion.`);
-      
-          // Delete the reservation document from the time slot collection
-          await deleteDoc(emailDocRef);
-          console.log(`Deleted reservation for email ${email} in time slot ${time}.`);
-      
-          // Update the user document to remove the reservation entry
-          const userDocRef = doc(dbUsers, email);
-          await updateDoc(userDocRef, {
-            [`reservations.${date}`]: deleteField() // Use deleteField() to remove the specific date
-          });
-          console.log(`Updated user document for email ${email}, removed reservation for ${date}.`);
-      
-          return {
-            message: `Reservation for ${date} and time slot ${time} successfully canceled.`
-          };
-      
-        } catch (error) {
-          console.error('Error canceling reservation:', error);
-          return null;
-        }
-      }
-    }
+            date = new Date(date);
+            const formattedDate = ReservationService.formatDate(date);
+            const docRef = doc(dbReservations, formattedDate);
+            const timeCollection = collection(docRef, time);
+            const snapshot = await getDocs(timeCollection);
+    
+            let reservationFound = false;
+            for (const docSnap of snapshot.docs) {
+                if (docSnap.id === email) {
+                    await deleteDoc(docSnap.ref);
+                    console.log(`Reservation for ${email} on ${formattedDate} at ${time} has been canceled.`);
+                    reservationFound = true;
+                    break;
+                }
+            }
+    
+            if (!reservationFound) {
+                console.log(`No reservation found for ${email} on ${formattedDate} at ${time}.`);
+                return null;
+            }
 
+            const user = UserService.cancelReservation(formattedDate, time, email)
+            return user;
+        } catch (error) {
+            console.error('Error canceling reservation:', error);
+            throw new Error('Failed to cancel reservation');
+        }
+    }
+}
 module.exports = ReservationService;

@@ -65,35 +65,34 @@ export class ReservationsComponent implements OnInit {
   }
   
   private async updateAvailableSlotsForRange() {
-  const dates = this.getDatesInRange(this.startDate, this.endDate);
-  
-  // Flatten the nested arrays
-  const slots = (await Promise.all(dates.map(async (date) => {
-    const formattedDate = format(date, 'd\\M\\yyyy');
-    const timeSlots = ['10 to 13', '13 to 16', '16 to 19', '19 to 22'];
+    const dates = this.getDatesInRange(this.startDate, this.endDate);
+    
+    // Flatten the nested arrays
+    const slots = (await Promise.all(dates.map(async (date) => {
+      const formattedDate = format(date, 'd\\M\\yyyy');
+      const timeSlots = ['10 to 13', '13 to 16', '16 to 19', '19 to 22'];
 
-    return Promise.all(timeSlots.map(async (time) => {
-      const slotRef = collection(this.firebaseService.getFirestore(), `reservations/${formattedDate}/${time}`);
-      const tempRef = doc(slotRef, 'temp');
-      const slotSnap = await getDoc(tempRef);
+      return Promise.all(timeSlots.map(async (time) => {
+        const slotRef = collection(this.firebaseService.getFirestore(), `reservations/${formattedDate}/${time}`);
+        const tempRef = doc(slotRef, 'temp');
+        const slotSnap = await getDoc(tempRef);
 
-      const reservationsSnap = await getDocs(query(slotRef, where('reservedBy', '!=', '')));
+        const reservationsSnap = await getDocs(query(slotRef, where('reservedBy', '!=', '')));
 
-      const reservedByUser = this.user ? (await getDocs(query(slotRef, where('reservedBy', '==', this.user.email!)))).size > 0 : false;
+        const reservedByUser = this.user ? (await getDocs(query(slotRef, where('reservedBy', '==', this.user.email!)))).size > 0 : false;
 
-      return {
-        date: formattedDate,
-        time,
-        reservationCount: reservationsSnap.size,
-        totalSlots: this.slotLimit,
-        available: reservationsSnap.size < this.slotLimit,
-        reservedByUser
-      };
-    }));
-  }))).flat(); // Flatten the nested array
-
-  this.slots = slots;
-}
+        return {
+          date: formattedDate,
+          time,
+          reservationCount: reservationsSnap.size,
+          totalSlots: this.slotLimit,
+          available: reservationsSnap.size < this.slotLimit,
+          reservedByUser
+        };
+      }));
+    }))).flat(); 
+    this.slots = slots;
+  }
 
   private getDatesInRange(startDate: Date, endDate: Date): Date[] {
     const dates = [];
@@ -104,6 +103,7 @@ export class ReservationsComponent implements OnInit {
       }
       currentDate = addDays(currentDate, 1);
     }
+    console.log(dates)
     return dates;
   }
 
