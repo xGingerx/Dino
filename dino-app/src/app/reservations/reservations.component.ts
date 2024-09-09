@@ -188,21 +188,6 @@ export class ReservationsComponent implements OnInit {
             slot.available = slot.reservationCount < this.slotLimit;
           }
         }
-        // Ukloni rezervaciju iz localStorage
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            const userObj = JSON.parse(storedUser);
-
-            // Proveri da li rezervacije postoje za dati datum
-            if (userObj.reservations && userObj.reservations[date]) {
-                delete userObj.reservations[date];  // Ukloni sve rezervacije za taj datum
-                // Ako je potrebno, možeš dodati kod za uklanjanje samo specifične vremenske intervale
-                // delete userObj.reservations[date][time]; // Ako želiš da ukloniš samo specifični vremenski interval
-            }
-
-            // Ažuriraj localStorage
-            localStorage.setItem('user', JSON.stringify(userObj));
-        }
     } catch (error) {
         console.error('Error cancelling reservation:', error);
     }

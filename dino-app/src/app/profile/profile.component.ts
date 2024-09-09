@@ -64,18 +64,21 @@ export class ProfileComponent implements OnInit {
         localStorage.setItem('user', JSON.stringify(data));
         const storedUser = localStorage.getItem('user');
         console.log(storedUser);
-      if(storedUser) {
-        const userObj = JSON.parse(storedUser);
-        this.displayName = userObj.displayName;
-        this.email = userObj.email;
-        this.photoURL = userObj.photoURL;
-        for (const key in userObj.reservations) {
+        if(storedUser) {
+          const userObj = JSON.parse(storedUser);
+          this.displayName = userObj.displayName;
+          this.email = userObj.email;
+          this.photoURL = userObj.photoURL;
+          console.log(userObj.reservations)
+          Object.entries(userObj.reservations).forEach(([key, value]) => {
             this.reservations.push({
-              date: userObj.reservations[key].date,
-              time: userObj.reservations[key].time
+              date: key,
+              time: (value as string)
             })
+          })
+          
         }
-      }
+        console.log(this.reservations)
       })
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -104,27 +107,14 @@ export class ProfileComponent implements OnInit {
         const data = await response.json();
         console.log('Server response:', data);  // Proveri odgovor servera
 
-        // Ukloni rezervaciju iz localStorage
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            const userObj = JSON.parse(storedUser);
-
-            // Proveri da li rezervacije postoje za dati datum
-            if (userObj.reservations && userObj.reservations[date]) {
-                // Ukloni rezervaciju za određeni vremenski interval
-                delete userObj.reservations[date];  // Ukloni sve rezervacije za taj datum
-                // Ako je potrebno, možeš dodati kod za uklanjanje samo specifične vremenske intervale
-                // delete userObj.reservations[date][time]; // Ako želiš da ukloniš samo specifični vremenski interval
-            }
-
-            // Ažuriraj localStorage
-            localStorage.setItem('user', JSON.stringify(userObj));
+        if(data) {
+          localStorage.setItem('user', JSON.stringify(data))
         }
 
-        // Ukloni rezervaciju iz UI-a
         this.reservations = this.reservations.filter(
             reservation => reservation.date !== date || reservation.time !== time
         );
+
 
     } catch (error) {
         console.error('Error cancelling reservation:', error);
