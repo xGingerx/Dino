@@ -9,7 +9,7 @@ export class SocketService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io('http://localhost:3002');
+    this.socket = io('https://dino-1-21ui.onrender.com');
   }
 
   emit(event: string, data: any) {

@@ -12,6 +12,7 @@ import { signInWithPopup, GoogleAuthProvider, User } from 'firebase/auth';
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit {
+  url = 'https://dino-eb0j.onrender.com'
   user: User | null = null;
   displayName: string = '';
 
@@ -30,7 +31,7 @@ export class NavbarComponent implements OnInit {
 
   async fetchUserData(email: string) {
     try {
-      await fetch('http://localhost:3000/users/get', {
+      await fetch(this.url + '/users/get', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,7 +65,7 @@ export class NavbarComponent implements OnInit {
       photoURL: result.user.photoURL
     }
 
-    await fetch('http://localhost:3000/users/create',{
+    await fetch(this.url + '/users/create',{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

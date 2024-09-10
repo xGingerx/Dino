@@ -14,6 +14,7 @@ import { SocketService } from './services/socket.service';
   styleUrls: ['./reservations.component.css']
 })
 export class ReservationsComponent implements OnInit {
+  url = 'https://dino-eb0j.onrender.com'
   title = 'Reservations';
   user: User | null = null;
   displayName = '';
@@ -69,7 +70,7 @@ export class ReservationsComponent implements OnInit {
 
   async fetchUserData(email: string) {
     try {
-      await fetch('http://localhost:3000/users/get', {
+      await fetch(this.url + '/users/get', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +98,7 @@ export class ReservationsComponent implements OnInit {
   private async updateAvailableSlotsForRange() {
     this.isLoading = true;
     try{
-      await fetch('http://localhost:3000/reservations/getActive', {
+      await fetch(this.url + '/reservations/getActive', {
         method:'GET',
         headers:{
           'Content-Type': 'application/json'
@@ -142,7 +143,7 @@ export class ReservationsComponent implements OnInit {
 
     const email = this.user.email;
     try {
-      await fetch('http://localhost:3000/reservations/create', {
+      await fetch(this.url + '/reservations/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -194,7 +195,7 @@ export class ReservationsComponent implements OnInit {
         const requestBody = JSON.stringify({ date, time, email });
         console.log('Sending request:', requestBody);
 
-        const response = await fetch('http://localhost:3000/reservations/delete', {
+        const response = await fetch(this.url + '/reservations/delete', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

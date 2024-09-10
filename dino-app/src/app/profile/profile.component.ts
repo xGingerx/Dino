@@ -15,6 +15,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
   styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent implements OnInit {
+  url = 'https://dino-eb0j.onrender.com'
   user: User | null = null;
   displayName: string = '';
   photoURL: string = '';
@@ -48,7 +49,7 @@ export class ProfileComponent implements OnInit {
 
   async fetchUserData(email: string) {
     try {
-      await fetch('http://localhost:3000/users/get', {
+      await fetch(this.url + '/users/get', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +85,7 @@ export class ProfileComponent implements OnInit {
     try {
         const email = this.email;
         const requestBody = JSON.stringify({ date, time, email });
-        const response = await fetch('http://localhost:3000/reservations/delete', {
+        const response = await fetch(this.url + '/reservations/delete', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -119,7 +120,7 @@ async saveChanges() {
     let photoURL = this.photoURL;
 
     if (this.selectedFile) {
-      const uploadResponse = await fetch('http://localhost:3000/users/uploadImage', {
+      const uploadResponse = await fetch(this.url + '/users/uploadImage', {
         method: 'POST',
         body: this.createFormData(this.selectedFile, email), 
       });
@@ -138,7 +139,7 @@ async saveChanges() {
       photoURL
     });
 
-    const response = await fetch('http://localhost:3000/users/update', {
+    const response = await fetch(this.url + '/users/update', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
